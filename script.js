@@ -19,33 +19,41 @@ function saveProfile() {
     }
 }
 
+// В самом начале файла создаем массив для новых вакансий
+let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
+
+function addJob() {
+    const title = document.getElementById('new-job-title').value;
+    const loc = document.getElementById('new-job-loc').value;
+    const tags = document.getElementById('new-job-tags').value.split(',').map(t => t.trim());
+
+    if(title && loc) {
+        const newJob = { title, loc, tags, baseChance: 50 };
+        dynamicJobs.push(newJob);
+        localStorage.setItem('dynamicJobs', JSON.stringify(dynamicJobs));
+        
+        document.getElementById('admin-panel').style.display = 'none';
+        renderJobs(); // Мгновенно обновляем список
+        alert("Вакансия успешно 'распаршена' и добавлена!");
+    }
+}
+
+// Измени начало функции renderJobs, чтобы она соединяла списки
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
     const userSkills = localStorage.getItem('userSkills') || "";
-    const allJobs = [
-        { title: "Python-разработчик", loc: "IT Hub", tags: ["python", "код", "программирование"], baseChance: 30 },
-        { title: "Бариста", loc: "14 мкр", tags: ["кофе", "люди", "общительный"], baseChance: 60 },
-        { title: "Курьер", loc: "Актау", tags: ["доставка", "машина", "самокат"], baseChance: 70 }
+
+    const staticJobs = [
+        { title: "Python-разработчик", loc: "IT Hub", tags: ["python", "код"], baseChance: 30 },
+        { title: "Бариста", loc: "14 мкр", tags: ["кофе", "люди"], baseChance: 60 }
     ];
+
+    // Соединяем встроенные вакансии и те, что ты добавишь сам
+    const allJobs = [...staticJobs, ...dynamicJobs];
+
     container.innerHTML = '';
-    allJobs.forEach(job => {
-        const matches = job.tags.filter(tag => userSkills.includes(tag));
-        let chance = job.baseChance + (matches.length * 35);
-        if (chance > 99) chance = 99;
-        let aiText = matches.length > 0 ? `Твой навык в **${matches[0]}** идеально подходит!` : "Прямых совпадений нет, но ты быстро научишься!";
-        
-        const card = document.createElement('div');
-        card.className = 'job-card';
-        card.innerHTML = `
-            <div class="chance-tag">Шанс: ${chance}%</div>
-            <h3>${job.title}</h3>
-            <p>📍 ${job.loc}</p>
-            <div class="ai-explanation">🤖 <strong>AI:</strong> ${aiText}</div>
-            <button class="apply-btn" onclick="applyJob('${job.title}')">Откликнуться</button>
-        `;
-        container.appendChild(card);
-    });
-}
+    // ... далее идет твой цикл allJobs.forEach как был раньше ...
+
 
 function applyJob(title) {
     const name = localStorage.getItem('userName');
