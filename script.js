@@ -1,24 +1,41 @@
 document.addEventListener('DOMContentLoaded', () => {
-    let jobsContainer = document.querySelector('.jobs-container');
-    if (!jobsContainer) {
-        jobsContainer = document.createElement('div');
-        jobsContainer.className = 'jobs-container';
-        document.body.appendChild(jobsContainer);
+    // Проверка, заполнен ли профиль
+    if (!localStorage.getItem('userName')) {
+        document.getElementById('auth-modal').style.display = 'flex';
     }
 
+    renderJobs();
+});
+
+function saveProfile() {
+    const name = document.getElementById('user-name').value;
+    const skills = document.getElementById('user-skills').value;
+
+    if (name && skills) {
+        localStorage.setItem('userName', name);
+        localStorage.setItem('userSkills', skills);
+        document.getElementById('auth-modal').style.display = 'none';
+        alert(`Привет, ${name}! Теперь вакансии подобраны под тебя.`);
+    } else {
+        alert("Пожалуйста, заполни данные!");
+    }
+}
+
+function renderJobs() {
+    const jobsContainer = document.querySelector('.jobs-container');
+    const userSkills = localStorage.getItem('userSkills') || "не указаны";
+
     const jobs = [
-        {
-            title: "Бариста в 14 микрорайоне",
-            location: "Актау, 14 мкр, кафе 'Coffee Day'",
-            chance: "92%",
-            reason: "Это работа для тебя! Тебе подходит, потому что ты живешь в 14 мкр и любишь общаться с людьми."
-        },
-        {
-            title: "Помощник администратора",
-            location: "Актау, 27 мкр, БЦ 'Каспий'",
-            chance: "65%",
-            reason: "Тут нужен уверенный Excel. Твой шанс 65%, так как ты еще не работал с таблицами."
-        }
+        { title: "Бариста", loc: "14 мкр, Coffee Day", chance: "92%", why: "Ты общительный, а это главное для баристы." },
+        { title: "Промоутер", loc: "ТРК Актау", chance: "95%", why: "Работа рядом с тобой, опыт не нужен." },
+        { title: "Помощник админа", loc: "27 мкр, БЦ Каспий", chance: "65%", why: "Нужно подтянуть Excel, как ты и писал." },
+        { title: "Официант", loc: "Набережная, 7 мкр", chance: "80%", why: "В летний сезон тут отличные чаевые." },
+        { title: "Курьер", loc: "Весь город", chance: "85%", why: "У тебя есть самокат, это твое преимущество." },
+        { title: "Оператор Call-центра", loc: "Удаленно", chance: "70%", why: "Твой голос и грамотность — это ключ." },
+        { title: "Кассир", loc: "Супермаркет 'Дана'", chance: "75%", why: "Внимательность, которую ты указал, поможет." },
+        { title: "SMM-помощник", loc: "Креативное агентство", chance: "60%", why: "Ты любишь соцсети, это хороший старт." },
+        { title: "Волонтер на выставку", loc: "Дом Дружбы", chance: "100%", why: "Идеально для твоего резюме и связей." },
+        { title: "Менеджер зала", loc: "Магазин одежды", chance: "82%", why: "Ты разбираешься в стиле и моде." }
     ];
 
     jobsContainer.innerHTML = '';
@@ -26,47 +43,35 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
-            <div class="chance-tag">Твой шанс: ${job.chance}</div>
+            <div class="chance-tag">${job.chance}</div>
             <h3>${job.title}</h3>
-            <p class="location">📍 ${job.location}</p>
+            <p class="location">📍 ${job.loc}</p>
             <div class="ai-explanation">
-                <p>🤖 <strong>ИИ Объясняет:</strong></p>
-                <p>${job.reason}</p>
+                <p>🤖 <strong>AI Анализ:</strong> ${job.why}</p>
             </div>
-            <button class="apply-btn">Откликнуться через AI</button>
+            <button class="apply-btn" onclick="applyJob('${job.title}', '${job.loc}')">Откликнуться со Smart Resume</button>
         `;
         jobsContainer.appendChild(card);
     });
+}
 
-    document.addEventListener('click', (e) => {
-        if (e.target && e.target.classList.contains('apply-btn')) {
-            const button = e.target;
-            const card = button.closest('.job-card');
-            const jobTitle = card.querySelector('h3').innerText;
-            const location = card.querySelector('.location').innerText;
+function applyJob(title, loc) {
+    const userName = localStorage.getItem('userName');
+    const userSkills = localStorage.getItem('userSkills');
 
-            button.innerText = 'Отправка...';
-            button.disabled = true;
-
-            // Указываем полный URL твоего приложения на Render
-            fetch('https://jumys-ai.onrender.com/api/apply', { 
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jobTitle, location })
-            })
-            .then(res => res.json())
-            .then(data => {
-                if (data.success) alert('Отклик отправлен! Проверь свой Telegram ✅');
-                else alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
-            })
-            .catch(err => {
-                console.error('Ошибка fetch:', err);
-                alert('Ошибка связи с сервером. Попробуй еще раз через 10 секунд.');
-            })
-            .finally(() => {
-                button.innerText = 'Откликнуться через AI';
-                button.disabled = false;
-            });
-        }
-    });
-});
+    fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+            jobTitle: title, 
+            location: loc,
+            studentName: userName,
+            studentSkills: userSkills
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) alert('Smart Resume отправлено админу! ✅');
+    })
+    .catch(() => alert('Ошибка связи'));
+}
