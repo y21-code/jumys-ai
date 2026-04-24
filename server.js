@@ -6,42 +6,46 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Твой токен бота
 const bot = new Telegraf('8664965350:AAG5a6dZdZ0n_isgvcvIuAwbEmhzhndYw3A');
+
+// Твой Telegram ID (чтобы уведомления не терялись)
+const MY_TELEGRAM_ID = 1251394140; 
 
 app.use(cors());
 app.use(express.json());
 
-// СТРОГО: Раздаем статику из корня
+// Раздаем статичные файлы (HTML, CSS, JS) из корня
 app.use(express.static(__dirname));
 
-// СТРОГО: Отдаем index.html при заходе на корень /
+// При заходе на сайт отдаем index.html
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-let adminId = null;
-
+// Логика бота
 bot.start((ctx) => {
-    adminId = ctx.from.id;
-    ctx.reply(`Привет! Я Jumys AI. Твой ID: ${adminId}.`);
-});
-
-bot.on('text', (ctx) => {
-    ctx.reply(`Твои навыки "${ctx.message.text}" приняты!`);
+    ctx.reply(`Привет, Абдулла! Я Jumys AI. Теперь уведомления с сайта будут приходить именно сюда.`);
 });
 
 bot.launch();
 
+// API для обработки нажатия кнопок на сайте
 app.post('/api/apply', (req, res) => {
     const { jobTitle, location } = req.body;
-    if (adminId) {
-        bot.telegram.sendMessage(adminId, `🚀 Новый отклик!\n💼 Вакансия: ${jobTitle}\n📍 Локация: ${location}`);
+    
+    const message = `🚀 **Новый AI-отклик!**\n\n💼 Вакансия: ${jobTitle}\n📍 Локация: ${location}`;
+
+    bot.telegram.sendMessage(MY_TELEGRAM_ID, message, { parse_mode: 'Markdown' })
+    .then(() => {
         res.json({ success: true });
-    } else {
-        res.status(400).json({ error: "Напиши /start боту!" });
-    }
+    })
+    .catch((err) => {
+        console.error("Ошибка при отправке в ТГ:", err);
+        res.status(500).json({ error: "Бот не смог отправить сообщение" });
+    });
 });
 
 app.listen(PORT, () => {
-    console.log(`Сервер запущен на порту: ${PORT}`);
+    console.log(`Сервер Jumys AI запущен на порту: ${PORT}`);
 });
