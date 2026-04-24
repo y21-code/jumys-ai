@@ -19,10 +19,9 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-// Бот приветствует каждого по его имени
 bot.start((ctx) => {
     const name = ctx.from.first_name || "пользователь";
-    ctx.reply(`Привет, ${name}! Я Jumys AI. Ищи вакансии на сайте и откликайся!`);
+    ctx.reply(`Привет, ${name}! 😊\n\nЯ помогу тебе найти первую работу в Актау с помощью ИИ.\n\n👇 Все актуальные вакансии тут:\nhttps://jumys-ai.onrender.com`);
 });
 
 bot.launch();
