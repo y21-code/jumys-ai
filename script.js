@@ -19,7 +19,7 @@ function saveProfile() {
     }
 }
 
-// Массив для динамических вакансий (имитация парсинга)
+// --- ФУНКЦИИ ДЛЯ АДМИН-ПАНЕЛИ (Имитация парсинга) ---
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
 function addJob() {
@@ -39,9 +39,10 @@ function addJob() {
     }
 }
 
+// --- ГЛАВНАЯ ФУНКЦИЯ ОТРИСОВКИ ---
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
-    if (!container) return; // Защита от ошибок
+    if (!container) return;
 
     const userSkills = localStorage.getItem('userSkills') || "";
 
@@ -60,8 +61,8 @@ function renderJobs() {
         if (chance > 99) chance = 99;
 
         let aiText = matches.length > 0 
-            ? `Твой навык в **${matches[0]}** идеально подходит!` 
-            : "Прямых совпадений нет, но ты быстро научишься!";
+            ? `Твой опыт в **${matches[0]}** идеально подходит!` 
+            : "Прямых совпадений нет, но твоя база поможет быстро обучиться!";
         
         const card = document.createElement('div');
         card.className = 'job-card';
@@ -76,6 +77,7 @@ function renderJobs() {
     });
 }
 
+// --- ОТПРАВКА В ТЕЛЕГРАМ ---
 function applyJob(title) {
     const name = localStorage.getItem('userName');
     const skills = localStorage.getItem('userSkills');
@@ -93,8 +95,8 @@ function applyJob(title) {
         if (res.ok) {
             alert("Отправлено в ТГ! ✅");
         } else {
-            alert("Ошибка! Проверь логи Render.");
+            alert("Ошибка на сервере. Проверь логи Render!");
         }
     })
-    .catch(err => alert("Ошибка соединения!"));
+    .catch(err => alert("Нет связи с сервером. Проверь интернет!"));
 }
