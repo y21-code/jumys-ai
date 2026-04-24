@@ -1,7 +1,13 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const jobsContainer = document.querySelector('.jobs-container');
+    // 1. Ищем или создаем контейнер для вакансий
+    let jobsContainer = document.querySelector('.jobs-container');
+    
+    if (!jobsContainer) {
+        jobsContainer = document.createElement('div');
+        jobsContainer.className = 'jobs-container';
+        document.body.appendChild(jobsContainer);
+    }
 
-    // Массив с твоими вакансиями
     const jobs = [
         {
             title: "Бариста в 14 микрорайоне",
@@ -17,33 +23,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // Рисуем карточки на странице
-    if (jobsContainer) {
-        jobsContainer.innerHTML = '';
-        jobs.forEach(job => {
-            const card = document.createElement('div');
-            card.className = 'job-card';
-            card.innerHTML = `
-                <div class="chance-tag">Твой шанс: ${job.chance}</div>
-                <h3>${job.title}</h3>
-                <p class="location">📍 ${job.location}</p>
-                <div class="ai-explanation">
-                    <p>🤖 <strong>ИИ Объясняет:</strong></p>
-                    <p>${job.reason}</p>
-                </div>
-                <button class="apply-btn">Откликнуться через AI</button>
-            `;
-            jobsContainer.appendChild(card);
-        });
-    }
+    // 2. Рисуем карточки
+    jobsContainer.innerHTML = '';
+    jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="chance-tag">Твой шанс: ${job.chance}</div>
+            <h3>${job.title}</h3>
+            <p class="location">📍 ${job.location}</p>
+            <div class="ai-explanation">
+                <p>🤖 <strong>ИИ Объясняет:</strong></p>
+                <p>${job.reason}</p>
+            </div>
+            <button class="apply-btn">Откликнуться через AI</button>
+        `;
+        jobsContainer.appendChild(card);
+    });
 
-    // Обработка нажатий на кнопки для всех пользователей
+    // 3. Логика кнопок
     document.addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('apply-btn')) {
             const button = e.target;
             const card = button.closest('.job-card');
             const jobTitle = card.querySelector('h3').innerText;
-            const location = card.querySelector('.location').innerText;
 
             button.innerText = 'Отправка...';
             button.disabled = true;
@@ -51,11 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fetch('https://jumys-ai.onrender.com/api/apply', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jobTitle, location })
+                body: JSON.stringify({ jobTitle, location: card.querySelector('.location').innerText })
             })
             .then(res => res.json())
             .then(data => {
-                if (data.success) alert('Отклик отправлен! Администратор свяжется с вами ✅');
+                if (data.success) alert('Отклик отправлен! Мы свяжемся с вами в Telegram ✅');
                 else alert('Ошибка отправки');
             })
             .catch(() => alert('Ошибка связи с сервером'))
