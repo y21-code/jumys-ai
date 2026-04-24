@@ -11,15 +11,32 @@ function saveProfile() {
     const name = document.getElementById('user-name').value;
     const skills = document.getElementById('user-skills').value;
 
-    if (name && skills) {
+    if (name.trim() && skills.trim()) {
         localStorage.setItem('userName', name);
         localStorage.setItem('userSkills', skills);
-        document.getElementById('auth-modal').style.display = 'none';
-        alert(`Привет, ${name}! Теперь вакансии подобраны под тебя.`);
+        
+        // Полностью скрываем модалку
+        const modal = document.getElementById('auth-modal');
+        modal.style.display = 'none';
+        
+        alert(`Привет, ${name}! Теперь ты можешь откликаться на вакансии.`);
+        renderJobs(); // Перерисовываем, чтобы данные обновились
     } else {
-        alert("Пожалуйста, заполни данные!");
+        alert("Пожалуйста, введи имя и свои навыки!");
     }
 }
+
+// Измени начальную проверку в DOMContentLoaded:
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('auth-modal');
+    if (!localStorage.getItem('userName')) {
+        modal.style.display = 'flex';
+    } else {
+        modal.style.display = 'none';
+    }
+    renderJobs();
+});
+
 
 function renderJobs() {
     const jobsContainer = document.querySelector('.jobs-container');
