@@ -24,7 +24,6 @@ bot.start((ctx) => {
 bot.launch().then(() => console.log("Бот запущен"));
 
 app.post('/api/apply', (req, res) => {
-    // ВНИМАНИЕ: Убрал location, так как его нет во фронтенде
     const { jobTitle, studentName, studentSkills } = req.body;
 
     const message = `🚀 **НОВОЕ SMART RESUME!**\n\n` +
