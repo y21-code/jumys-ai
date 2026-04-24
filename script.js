@@ -19,13 +19,14 @@ function saveProfile() {
     }
 }
 
-// В самом начале файла создаем массив для новых вакансий
+// Массив для динамических вакансий (имитация парсинга)
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
 function addJob() {
     const title = document.getElementById('new-job-title').value;
     const loc = document.getElementById('new-job-loc').value;
-    const tags = document.getElementById('new-job-tags').value.split(',').map(t => t.trim());
+    const tagsInput = document.getElementById('new-job-tags').value;
+    const tags = tagsInput ? tagsInput.split(',').map(t => t.trim()) : [];
 
     if(title && loc) {
         const newJob = { title, loc, tags, baseChance: 50 };
@@ -33,27 +34,47 @@ function addJob() {
         localStorage.setItem('dynamicJobs', JSON.stringify(dynamicJobs));
         
         document.getElementById('admin-panel').style.display = 'none';
-        renderJobs(); // Мгновенно обновляем список
+        renderJobs(); 
         alert("Вакансия успешно 'распаршена' и добавлена!");
     }
 }
 
-// Измени начало функции renderJobs, чтобы она соединяла списки
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
+    if (!container) return; // Защита от ошибок
+
     const userSkills = localStorage.getItem('userSkills') || "";
 
     const staticJobs = [
-        { title: "Python-разработчик", loc: "IT Hub", tags: ["python", "код"], baseChance: 30 },
-        { title: "Бариста", loc: "14 мкр", tags: ["кофе", "люди"], baseChance: 60 }
+        { title: "Python-разработчик", loc: "IT Hub", tags: ["python", "код", "разработка"], baseChance: 30 },
+        { title: "Бариста", loc: "14 мкр, Coffee Day", tags: ["кофе", "люди", "общительный"], baseChance: 60 },
+        { title: "Курьер", loc: "Актау, Весь город", tags: ["доставка", "машина", "самокат"], baseChance: 70 }
     ];
 
-    // Соединяем встроенные вакансии и те, что ты добавишь сам
     const allJobs = [...staticJobs, ...dynamicJobs];
-
     container.innerHTML = '';
-    // ... далее идет твой цикл allJobs.forEach как был раньше ...
 
+    allJobs.forEach(job => {
+        const matches = job.tags.filter(tag => userSkills.includes(tag));
+        let chance = job.baseChance + (matches.length * 35);
+        if (chance > 99) chance = 99;
+
+        let aiText = matches.length > 0 
+            ? `Твой навык в **${matches[0]}** идеально подходит!` 
+            : "Прямых совпадений нет, но ты быстро научишься!";
+        
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="chance-tag">Шанс: ${chance}%</div>
+            <h3>${job.title}</h3>
+            <p>📍 ${job.loc}</p>
+            <div class="ai-explanation">🤖 <strong>AI Анализ:</strong> ${aiText}</div>
+            <button class="apply-btn" onclick="applyJob('${job.title}')">Откликнуться со Smart Resume</button>
+        `;
+        container.appendChild(card);
+    });
+}
 
 function applyJob(title) {
     const name = localStorage.getItem('userName');
@@ -72,8 +93,8 @@ function applyJob(title) {
         if (res.ok) {
             alert("Отправлено в ТГ! ✅");
         } else {
-            alert("Сервер получил данные, но бот не смог отправить сообщение. Проверь логи Render!");
+            alert("Ошибка! Проверь логи Render.");
         }
     })
-    .catch(err => alert("Ошибка соединения с сервером!"));
+    .catch(err => alert("Ошибка соединения!"));
 }
