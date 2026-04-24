@@ -28,34 +28,59 @@ function saveProfile() {
 
 function renderJobs() {
     const jobsContainer = document.querySelector('.jobs-container');
-    const userSkills = localStorage.getItem('userSkills') || "";
+    const userSkills = (localStorage.getItem('userSkills') || "").toLowerCase();
 
     const allJobs = [
-        { title: "Бариста", loc: "14 мкр, Coffee Day", chance: "92%", tags: ["кофе", "общительный", "люди", "кафе"] },
-        { title: "SMM-помощник", loc: "Креативное агентство", chance: "85%", tags: ["инстаграм", "фото", "видео", "соцсети", "дизайн"] },
-        { title: "Помощник админа", loc: "27 мкр, БЦ Каспий", chance: "65%", tags: ["excel", "компьютер", "офис", "таблицы"] },
-        { title: "Курьер", loc: "Весь город", chance: "95%", tags: ["машина", "права", "самокат", "быстрый", "доставка"] },
-        { title: "Официант", loc: "Набережная", chance: "80%", tags: ["ресторан", "сервис", "еда", "люди"] }
+        { 
+            title: "Бариста", 
+            loc: "14 мкр, Coffee Day", 
+            tags: ["люди", "кофе", "общительный", "энергичный"],
+            baseChance: 60
+        },
+        { 
+            title: "SMM-помощник", 
+            loc: "Креативное агентство", 
+            tags: ["инстаграм", "фото", "видео", "дизайн", "python"], // Python может быть полезен для парсинга
+            baseChance: 50
+        },
+        { 
+            title: "Курьер", 
+            loc: "Весь город", 
+            tags: ["машина", "самокат", "быстрый", "доставка"],
+            baseChance: 70
+        },
+        { 
+            title: "IT-стажер", 
+            loc: "Digital Office Aktau", 
+            tags: ["python", "код", "программирование", "компьютер"],
+            baseChance: 40
+        }
     ];
 
-    // МАГИЯ AI: Фильтруем вакансии по ключевым словам из твоих навыков
-    let filteredJobs = allJobs.filter(job => {
-        return job.tags.some(tag => userSkills.includes(tag));
-    });
-
-    // Если ничего не подошло, показываем всё, чтобы сайт не был пустым
-    if (filteredJobs.length === 0) filteredJobs = allJobs;
-
     jobsContainer.innerHTML = '';
-    filteredJobs.forEach(job => {
+
+    allJobs.forEach(job => {
+        // Проверяем, есть ли хоть одно совпадение навыков студента с тегами вакансии
+        const matches = job.tags.filter(tag => userSkills.includes(tag));
+        let finalChance = job.baseChance + (matches.length * 15); // За каждое совпадение +15%
+        if (finalChance > 99) finalChance = 99;
+
+        // Если есть совпадение, показываем умное объяснение. Если нет - стандартное.
+        let aiReason = "";
+        if (matches.length > 0) {
+            aiReason = `Твои навыки (${matches.join(", ")}) отлично подходят здесь!`;
+        } else {
+            aiReason = `Эта работа поможет тебе развить базовые навыки, пока ты ищешь вакансии в IT.`;
+        }
+
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
-            <div class="chance-tag">${job.chance}</div>
+            <div class="chance-tag">Шанс: ${finalChance}%</div>
             <h3>${job.title}</h3>
             <p class="location">📍 ${job.loc}</p>
             <div class="ai-explanation">
-                <p>🤖 <strong>AI Анализ:</strong> Подходит под твои навыки: ${userSkills}</p>
+                <p>🤖 <strong>AI Анализ:</strong> ${aiReason}</p>
             </div>
             <button class="apply-btn" onclick="applyJob('${job.title}', '${job.loc}')">Откликнуться со Smart Resume</button>
         `;
