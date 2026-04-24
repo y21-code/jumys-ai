@@ -1,4 +1,3 @@
-// Ждем загрузки страницы
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('auth-modal');
     if (localStorage.getItem('userName')) {
@@ -7,7 +6,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Сохранение профиля
 function saveProfile() {
     const nameInput = document.getElementById('user-name');
     const skillsInput = document.getElementById('user-skills');
@@ -25,10 +23,8 @@ function saveProfile() {
     }
 }
 
-// Глобальный массив для новых вакансий
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
-// Добавление новой вакансии (Админка)
 function addJob() {
     const title = document.getElementById('new-job-title').value;
     const loc = document.getElementById('new-job-loc').value;
@@ -48,7 +44,6 @@ function addJob() {
     }
 }
 
-// Отрисовка вакансий
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
     if (!container) return;
@@ -71,7 +66,7 @@ function renderJobs() {
 
         let aiText = matches.length > 0 
             ? `Твой опыт в **${matches[0]}** идеально подходит!` 
-            : "Прямых совпадений нет, но ты быстро обучишься!";
+            : "Прямых совпадений нет, но ты быстро научишься!";
         
         const card = document.createElement('div');
         card.className = 'job-card';
@@ -79,6 +74,11 @@ function renderJobs() {
             <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
             <p>📍 ${job.loc}</p>
+            
+            <div class="chance-bar-container">
+                <div class="chance-bar-fill" style="width: ${chance}%"></div>
+            </div>
+
             <div class="ai-explanation">🤖 <strong>AI Анализ:</strong> ${aiText}</div>
             <button class="apply-btn" onclick="applyJob('${job.title}')">Откликнуться</button>
         `;
@@ -86,7 +86,6 @@ function renderJobs() {
     });
 }
 
-// Отправка в ТГ
 function applyJob(title) {
     const name = localStorage.getItem('userName');
     const skills = localStorage.getItem('userSkills');
