@@ -33,15 +33,9 @@ h1 {
     justify-content: center;
     align-items: center;
     z-index: 9999;
-    transition: opacity 0.4s ease;
 }
 
-/* Когда профиль сохранен, мы полностью уничтожаем окно */
-.modal.hidden {
-    display: none !important;
-    visibility: hidden;
-    pointer-events: none;
-}
+.modal.hidden { display: none !important; }
 
 .modal-content {
     background: var(--glass);
@@ -77,6 +71,21 @@ input, textarea {
     border-radius: 20px;
     padding: 20px;
     position: relative;
+}
+
+/* ШКАЛА ШАНСА (PROGRESS BAR) */
+.chance-bar-container {
+    background: rgba(255, 255, 255, 0.1);
+    height: 8px;
+    border-radius: 4px;
+    margin: 15px 0;
+    overflow: hidden;
+}
+
+.chance-bar-fill {
+    height: 100%;
+    background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
+    transition: width 1s ease-in-out;
 }
 
 .chance-tag {
