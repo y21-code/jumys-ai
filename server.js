@@ -23,9 +23,10 @@ app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-// Логика бота
 bot.start((ctx) => {
-    ctx.reply(`Привет, Абдулла! Я Jumys AI. Теперь уведомления с сайта будут приходить именно сюда.`);
+    // ctx.from.first_name — это имя пользователя в Telegram
+    const userName = ctx.from.first_name || "пользователь";
+    ctx.reply(`Привет, ${userName}! Я Jumys AI. Теперь уведомления с сайта будут приходить именно сюда.`);
 });
 
 bot.launch();
