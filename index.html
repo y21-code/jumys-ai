@@ -26,5 +26,19 @@
         </div>
 
     <script src="script.js"></script>
+    <button onclick="document.getElementById('admin-panel').style.display='flex'" style="position:fixed; bottom:10px; right:10px; opacity:0.3; background:none; border:none; color:white; font-size:10px;">Admin</button>
+
+<div id="admin-panel" class="modal" style="display:none;">
+    <div class="modal-content glass">
+        <h2>Имитация Парсинга 📡</h2>
+        <p>Вставь сюда текст вакансии из WhatsApp</p>
+        <input type="text" id="new-job-title" placeholder="Название (например: Повар)">
+        <input type="text" id="new-job-loc" placeholder="Мкр (например: 4 мкр)">
+        <input type="text" id="new-job-tags" placeholder="Теги через запятую (кофе, еда)">
+        <button onclick="addJob()" class="apply-btn">Опубликовать на сайт</button>
+        <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; color:gray; border:none; margin-top:10px;">Закрыть</button>
+    </div>
+</div>
+
 </body>
 </html>
