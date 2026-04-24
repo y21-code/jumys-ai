@@ -1,47 +1,68 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Находим все кнопки "Откликнуться"
-    const applyButtons = document.querySelectorAll('.apply-btn');
+    const jobsContainer = document.querySelector('.jobs-container');
 
-    applyButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            // Ищем карточку, в которой лежит кнопка, чтобы забрать данные
-            const card = this.closest('.job-card');
+    // Данные вакансий (твои карточки)
+    const jobs = [
+        {
+            title: "Бариста в 14 микрорайоне",
+            location: "Актау, 14 мкр, кафе 'Coffee Day'",
+            chance: "92%",
+            reason: "Это работа для тебя! Тебе подходит, потому что ты живешь в 14 мкр и любишь общаться с людьми."
+        },
+        {
+            title: "Помощник администратора",
+            location: "Актау, 27 мкр, БЦ 'Каспий'",
+            chance: "65%",
+            reason: "Тут нужен уверенный Excel. Твой шанс 65%, так как ты еще не работал с таблицами."
+        }
+    ];
+
+    // Очищаем контейнер перед рендером
+    jobsContainer.innerHTML = '';
+
+    // Рисуем карточки на сайте
+    jobs.forEach(job => {
+        const card = document.createElement('div');
+        card.className = 'job-card';
+        card.innerHTML = `
+            <div class="chance-tag">Твой шанс: ${job.chance}</div>
+            <h3>${job.title}</h3>
+            <p class="location">📍 ${job.location}</p>
+            <div class="ai-explanation">
+                <p>🤖 <strong>ИИ Объясняет:</strong></p>
+                <p>${job.reason}</p>
+            </div>
+            <button class="apply-btn">Откликнуться через AI</button>
+        `;
+        jobsContainer.appendChild(card);
+    });
+
+    // Логика нажатия на кнопки
+    document.addEventListener('click', (e) => {
+        if (e.target && e.target.classList.contains('apply-btn')) {
+            const button = e.target;
+            const card = button.closest('.job-card');
             const jobTitle = card.querySelector('h3').innerText;
             const location = card.querySelector('.location').innerText;
 
-            // Меняем текст кнопки, чтобы пользователь видел процесс
-            const originalText = this.innerText;
-            this.innerText = 'Отправка...';
-            this.disabled = true;
+            button.innerText = 'Отправка...';
+            button.disabled = true;
 
-            // Отправляем данные на бэкенд Render
             fetch('https://jumys-ai.onrender.com/api/apply', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    jobTitle: jobTitle,
-                    location: location
-                })
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ jobTitle, location })
             })
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    alert('Успешно! Проверь свой Telegram-бот ✅');
-                } else {
-                    alert('Ошибка: ' + (data.error || 'Неизвестная ошибка'));
-                }
+                if (data.success) alert('Отклик отправлен! Проверь Telegram ✅');
+                else alert('Ошибка отправки');
             })
-            .catch(error => {
-                console.error('Ошибка:', error);
-                alert('Не удалось связаться с сервером. Попробуй позже.');
-            })
+            .catch(() => alert('Ошибка связи с сервером'))
             .finally(() => {
-                // Возвращаем кнопку в исходное состояние
-                this.innerText = originalText;
-                this.disabled = false;
+                button.innerText = 'Откликнуться через AI';
+                button.disabled = false;
             });
-        });
+        }
     });
 });
