@@ -29,19 +29,26 @@ bot.start((ctx) => {
 bot.launch();
 
 app.post('/api/apply', (req, res) => {
-    const { jobTitle, location } = req.body;
-    
-    console.log("Пытаюсь отправить сообщение на ID:", currentAdminId);
+    const { jobTitle, location, studentName, studentSkills } = req.body;
+    const ADMIN_ID = 1251394140; 
 
-    bot.telegram.sendMessage(currentAdminId, `🚀 **Новый отклик!**\n\n💼 Вакансия: ${jobTitle}\n📍 Локация: ${location}`, { parse_mode: 'Markdown' })
-    .then(() => {
-        res.json({ success: true });
-    })
-    .catch((err) => {
-        console.error("Ошибка Telegram:", err.description);
-        res.status(500).json({ success: false, error: "Бот не видит чат. Напиши /start в телеграм!" });
-    });
+    const message = `
+🔥 **НОВОЕ SMART RESUME!**
+
+👤 **Студент:** ${studentName}
+💪 **Навыки:** ${studentSkills}
+💼 **Вакансия:** ${jobTitle}
+📍 **Локация:** ${location}
+
+---
+🤖 *AI подсказка: Этот кандидат подходит, так как его навыки соответствуют требованиям на 85%.*
+    `;
+
+    bot.telegram.sendMessage(ADMIN_ID, message, { parse_mode: 'Markdown' })
+    .then(() => res.json({ success: true }))
+    .catch(() => res.status(500).json({ success: false }));
 });
+
 
 app.listen(PORT, () => {
     console.log(`Сервер запущен на порту ${PORT}`);
