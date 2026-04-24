@@ -1,27 +1,34 @@
+// Ждем загрузки страницы
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('auth-modal');
     if (localStorage.getItem('userName')) {
-        modal.classList.add('hidden');
+        if (modal) modal.classList.add('hidden');
         renderJobs();
     }
 });
 
+// Сохранение профиля
 function saveProfile() {
-    const name = document.getElementById('user-name').value;
-    const skills = document.getElementById('user-skills').value;
-    if (name.trim() && skills.trim()) {
-        localStorage.setItem('userName', name);
-        localStorage.setItem('userSkills', skills.toLowerCase());
-        document.getElementById('auth-modal').classList.add('hidden');
+    const nameInput = document.getElementById('user-name');
+    const skillsInput = document.getElementById('user-skills');
+
+    if (nameInput && skillsInput && nameInput.value.trim() && skillsInput.value.trim()) {
+        localStorage.setItem('userName', nameInput.value);
+        localStorage.setItem('userSkills', skillsInput.value.toLowerCase());
+        
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.add('hidden');
+        
         renderJobs();
     } else {
-        alert("Заполни поля!");
+        alert("Заполни все поля, брат!");
     }
 }
 
-// --- ФУНКЦИИ ДЛЯ АДМИН-ПАНЕЛИ (Имитация парсинга) ---
+// Глобальный массив для новых вакансий
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
+// Добавление новой вакансии (Админка)
 function addJob() {
     const title = document.getElementById('new-job-title').value;
     const loc = document.getElementById('new-job-loc').value;
@@ -33,13 +40,15 @@ function addJob() {
         dynamicJobs.push(newJob);
         localStorage.setItem('dynamicJobs', JSON.stringify(dynamicJobs));
         
-        document.getElementById('admin-panel').style.display = 'none';
+        const adminPanel = document.getElementById('admin-panel');
+        if (adminPanel) adminPanel.style.display = 'none';
+        
         renderJobs(); 
-        alert("Вакансия успешно 'распаршена' и добавлена!");
+        alert("Вакансия добавлена!");
     }
 }
 
-// --- ГЛАВНАЯ ФУНКЦИЯ ОТРИСОВКИ ---
+// Отрисовка вакансий
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
     if (!container) return;
@@ -47,9 +56,9 @@ function renderJobs() {
     const userSkills = localStorage.getItem('userSkills') || "";
 
     const staticJobs = [
-        { title: "Python-разработчик", loc: "IT Hub", tags: ["python", "код", "разработка"], baseChance: 30 },
-        { title: "Бариста", loc: "14 мкр, Coffee Day", tags: ["кофе", "люди", "общительный"], baseChance: 60 },
-        { title: "Курьер", loc: "Актау, Весь город", tags: ["доставка", "машина", "самокат"], baseChance: 70 }
+        { title: "Python-разработчик", loc: "IT Hub Aktau", tags: ["python", "код"], baseChance: 30 },
+        { title: "Бариста", loc: "14 мкр, Coffee Day", tags: ["кофе", "люди"], baseChance: 60 },
+        { title: "Курьер", loc: "Актау, Весь город", tags: ["доставка", "машина"], baseChance: 70 }
     ];
 
     const allJobs = [...staticJobs, ...dynamicJobs];
@@ -62,7 +71,7 @@ function renderJobs() {
 
         let aiText = matches.length > 0 
             ? `Твой опыт в **${matches[0]}** идеально подходит!` 
-            : "Прямых совпадений нет, но твоя база поможет быстро обучиться!";
+            : "Прямых совпадений нет, но ты быстро обучишься!";
         
         const card = document.createElement('div');
         card.className = 'job-card';
@@ -71,13 +80,13 @@ function renderJobs() {
             <h3>${job.title}</h3>
             <p>📍 ${job.loc}</p>
             <div class="ai-explanation">🤖 <strong>AI Анализ:</strong> ${aiText}</div>
-            <button class="apply-btn" onclick="applyJob('${job.title}')">Откликнуться со Smart Resume</button>
+            <button class="apply-btn" onclick="applyJob('${job.title}')">Откликнуться</button>
         `;
         container.appendChild(card);
     });
 }
 
-// --- ОТПРАВКА В ТЕЛЕГРАМ ---
+// Отправка в ТГ
 function applyJob(title) {
     const name = localStorage.getItem('userName');
     const skills = localStorage.getItem('userSkills');
@@ -91,12 +100,7 @@ function applyJob(title) {
             studentSkills: skills 
         })
     })
-    .then(res => {
-        if (res.ok) {
-            alert("Отправлено в ТГ! ✅");
-        } else {
-            alert("Ошибка на сервере. Проверь логи Render!");
-        }
-    })
-    .catch(err => alert("Нет связи с сервером. Проверь интернет!"));
+    .then(res => res.json())
+    .then(data => alert("Отправлено в ТГ! ✅"))
+    .catch(err => alert("Ошибка связи с сервером!"));
 }
