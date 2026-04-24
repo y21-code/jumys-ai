@@ -1,7 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Ищем или создаем контейнер для вакансий
     let jobsContainer = document.querySelector('.jobs-container');
-    
     if (!jobsContainer) {
         jobsContainer = document.createElement('div');
         jobsContainer.className = 'jobs-container';
@@ -23,7 +21,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // 2. Рисуем карточки вакансий на странице
     jobsContainer.innerHTML = '';
     jobs.forEach(job => {
         const card = document.createElement('div');
@@ -41,7 +38,6 @@ document.addEventListener('DOMContentLoaded', () => {
         jobsContainer.appendChild(card);
     });
 
-    // 3. Логика кнопок (отправка данных в Telegram)
     document.addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('apply-btn')) {
             const button = e.target;
@@ -52,26 +48,20 @@ document.addEventListener('DOMContentLoaded', () => {
             button.innerText = 'Отправка...';
             button.disabled = true;
 
-            // Используем относительный путь /api/apply
-            fetch('/api/apply', { 
+            // Указываем полный URL твоего приложения на Render
+            fetch('https://jumys-ai.onrender.com/api/apply', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ jobTitle, location })
             })
-            .then(res => {
-                if (!res.ok) throw new Error('Ошибка сервера');
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
-                if (data.success) {
-                    alert('Отклик отправлен! Проверь Telegram ✅');
-                } else {
-                    alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
-                }
+                if (data.success) alert('Отклик отправлен! Проверь свой Telegram ✅');
+                else alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
             })
             .catch(err => {
-                console.error(err);
-                alert('Ошибка связи с сервером. Попробуй позже.');
+                console.error('Ошибка fetch:', err);
+                alert('Ошибка связи с сервером. Попробуй еще раз через 10 секунд.');
             })
             .finally(() => {
                 button.innerText = 'Откликнуться через AI';
