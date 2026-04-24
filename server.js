@@ -7,7 +7,7 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const bot = new Telegraf('8664965350:AAG5a6dZdZ0n_isgvcvIuAwbEmhzhndYw3A');
-const ADMIN_ID = 1251394140; 
+const ADMIN_ID = 5635911697; 
 
 app.use(cors());
 app.use(express.json());
