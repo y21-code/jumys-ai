@@ -1,9 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('auth-modal');
-    if (!localStorage.getItem('userName')) {
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-    } else {
+    // Если имя уже есть, сразу прячем окно
+    if (localStorage.getItem('userName')) {
         modal.classList.add('hidden');
         renderJobs();
     }
@@ -15,68 +13,63 @@ function saveProfile() {
 
     if (name.trim() && skills.trim()) {
         localStorage.setItem('userName', name);
-        localStorage.setItem('userSkills', skills.toLowerCase()); // Сохраняем в маленьком регистре для поиска
+        localStorage.setItem('userSkills', skills.toLowerCase());
 
         const modal = document.getElementById('auth-modal');
-        modal.classList.add('hidden'); // Полностью прячем
+        modal.classList.add('hidden'); // Убираем невидимую стену
         
         renderJobs();
     } else {
-        alert("Заполни имя и навыки!");
+        alert("Пожалуйста, заполни поля!");
     }
 }
 
 function renderJobs() {
     const jobsContainer = document.querySelector('.jobs-container');
-    const userSkills = (localStorage.getItem('userSkills') || "").toLowerCase();
+    const userSkills = (localStorage.getItem('userSkills') || "");
 
     const allJobs = [
         { 
+            title: "Python Разработчик (Стажер)", 
+            loc: "IT Hub Aktau", 
+            tags: ["python", "код", "программирование", "разработка"],
+            baseChance: 40
+        },
+        { 
             title: "Бариста", 
             loc: "14 мкр, Coffee Day", 
-            tags: ["люди", "кофе", "общительный", "энергичный"],
+            tags: ["люди", "кофе", "общительный"],
             baseChance: 60
         },
         { 
-            title: "SMM-помощник", 
-            loc: "Креативное агентство", 
-            tags: ["инстаграм", "фото", "видео", "дизайн", "python"], // Python может быть полезен для парсинга
+            title: "SMM-менеджер", 
+            loc: "Digital Agency", 
+            tags: ["инстаграм", "фото", "контент"],
             baseChance: 50
-        },
-        { 
-            title: "Курьер", 
-            loc: "Весь город", 
-            tags: ["машина", "самокат", "быстрый", "доставка"],
-            baseChance: 70
-        },
-        { 
-            title: "IT-стажер", 
-            loc: "Digital Office Aktau", 
-            tags: ["python", "код", "программирование", "компьютер"],
-            baseChance: 40
         }
     ];
 
     jobsContainer.innerHTML = '';
 
     allJobs.forEach(job => {
-        // Проверяем, есть ли хоть одно совпадение навыков студента с тегами вакансии
+        // Ищем совпадения навыков
         const matches = job.tags.filter(tag => userSkills.includes(tag));
-        let finalChance = job.baseChance + (matches.length * 15); // За каждое совпадение +15%
-        if (finalChance > 99) finalChance = 99;
+        
+        // Если есть совпадение по Python, шанс взлетает
+        let chance = job.baseChance + (matches.length * 30);
+        if (chance > 99) chance = 99;
 
-        // Если есть совпадение, показываем умное объяснение. Если нет - стандартное.
         let aiReason = "";
         if (matches.length > 0) {
-            aiReason = `Твои навыки (${matches.join(", ")}) отлично подходят здесь!`;
+            aiReason = `Твой опыт в (${matches.join(", ")}) — это именно то, что нужно!`;
         } else {
-            aiReason = `Эта работа поможет тебе развить базовые навыки, пока ты ищешь вакансии в IT.`;
+            aiReason = `Пока нет прямых совпадений, но твоя база поможет быстро обучиться.`;
         }
 
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
-            <div class="chance-tag">Шанс: ${finalChance}%</div>
+            <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
             <p class="location">📍 ${job.loc}</p>
             <div class="ai-explanation">
@@ -86,25 +79,4 @@ function renderJobs() {
         `;
         jobsContainer.appendChild(card);
     });
-}
-
-function applyJob(title, loc) {
-    const userName = localStorage.getItem('userName');
-    const userSkills = localStorage.getItem('userSkills');
-
-    fetch('/api/apply', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            jobTitle: title, 
-            location: loc,
-            studentName: userName,
-            studentSkills: userSkills
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) alert('Smart Resume отправлено! ✅');
-    })
-    .catch(() => alert('Ошибка сервера'));
 }
