@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // 2. Рисуем карточки
+    // 2. Рисуем карточки вакансий на странице
     jobsContainer.innerHTML = '';
     jobs.forEach(job => {
         const card = document.createElement('div');
@@ -41,27 +41,38 @@ document.addEventListener('DOMContentLoaded', () => {
         jobsContainer.appendChild(card);
     });
 
-    // 3. Логика кнопок
+    // 3. Логика кнопок (отправка данных в Telegram)
     document.addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('apply-btn')) {
             const button = e.target;
             const card = button.closest('.job-card');
             const jobTitle = card.querySelector('h3').innerText;
+            const location = card.querySelector('.location').innerText;
 
             button.innerText = 'Отправка...';
             button.disabled = true;
 
-            fetch('https://jumys-ai.onrender.com/api/apply', {
+            // Используем относительный путь /api/apply
+            fetch('/api/apply', { 
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ jobTitle, location: card.querySelector('.location').innerText })
+                body: JSON.stringify({ jobTitle, location })
             })
-            .then(res => res.json())
+            .then(res => {
+                if (!res.ok) throw new Error('Ошибка сервера');
+                return res.json();
+            })
             .then(data => {
-                if (data.success) alert('Отклик отправлен! Мы свяжемся с вами в Telegram ✅');
-                else alert('Ошибка отправки');
+                if (data.success) {
+                    alert('Отклик отправлен! Проверь Telegram ✅');
+                } else {
+                    alert('Ошибка: ' + (data.error || 'неизвестная ошибка'));
+                }
             })
-            .catch(() => alert('Ошибка связи с сервером'))
+            .catch(err => {
+                console.error(err);
+                alert('Ошибка связи с сервером. Попробуй позже.');
+            })
             .finally(() => {
                 button.innerText = 'Откликнуться через AI';
                 button.disabled = false;
