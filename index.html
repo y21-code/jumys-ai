@@ -2,20 +2,29 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Jumys AI — Работа в Актау</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jumys AI — Твой путь к работе</title>
     <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <div class="logo">Jumys <span>AI</span></div>
-    </header>
-    <main>
-        <div class="hero">
-            <h1>Твой AI-наставник по первой работе</h1>
-            <p>Анализируем вакансии из мессенджеров и подбираем лучшее для тебя.</p>
+
+    <div id="auth-modal" class="modal">
+        <div class="modal-content glass">
+            <h2>Расскажи о себе 🤖</h2>
+            <p>ИИ проанализирует твои навыки и подберет идеальную вакансию в Актау.</p>
+            <input type="text" id="user-name" placeholder="Твое имя">
+            <textarea id="user-skills" placeholder="Что ты умеешь? (например: Excel, пунктуальность, вождение, общение с людьми)"></textarea>
+            <button onclick="saveProfile()" class="apply-btn">Найти работу</button>
         </div>
-        <div id="jobs-list"></div>
-    </main>
+    </div>
+
+    <h1>Jumys AI</h1>
+    <p class="subtitle">Интеллектуальный мост к работе в Актау</p>
+    
+    <div class="jobs-container">
+        </div>
+
     <script src="script.js"></script>
 </body>
 </html>
