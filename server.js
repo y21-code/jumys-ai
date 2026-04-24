@@ -6,45 +6,46 @@ const path = require('path');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Токен твоего бота
+// Твой токен бота
 const bot = new Telegraf('8664965350:AAG5a6dZdZ0n_isgvcvIuAwbEmhzhndYw3A');
 
-// Твой Telegram ID для уведомлений
+// Твой постоянный ID, чтобы бот всегда знал, кому слать уведомления
 const ADMIN_ID = 1251394140; 
 
 app.use(cors());
-app.use(express.json()); // Обязательно для чтения данных с сайта
+app.use(express.json());
 app.use(express.static(__dirname));
 
-// Отдаем главную страницу сайта
+// Главная страница
 app.get('/', (req, res) => {
     res.sendFile(path.resolve(__dirname, 'index.html'));
 });
 
-// Команда /start для пользователей
+// Ответ бота на команду /start
 bot.start((ctx) => {
-    const name = ctx.from.first_name || "пользователь";
-    ctx.reply(`Привет, ${name}! 😊\n\nЯ помогу тебе найти первую работу в Актау с помощью ИИ.\n\n👇 Все актуальные вакансии тут:\nhttps://jumys-ai.onrender.com`);
+    ctx.reply(`Привет, ${ctx.from.first_name || 'Абдулла'}! 😊\n\nЯ помогу тебе найти первую работу в Актау.\n\n👇 Вакансии тут:\nhttps://jumys-ai.onrender.com`);
 });
 
 bot.launch();
 
-// Обработчик откликов с сайта
+// Обработчик отклика с сайта
 app.post('/api/apply', (req, res) => {
     const { jobTitle, location } = req.body;
 
-    // Отправляем уведомление именно тебе (ADMIN_ID)
+    console.log(`Попытка отправить уведомление для: ${jobTitle}`);
+
+    // Используем ADMIN_ID напрямую
     bot.telegram.sendMessage(ADMIN_ID, `🚀 **Новый отклик!**\n\n💼 Вакансия: ${jobTitle}\n📍 Локация: ${location}`, { parse_mode: 'Markdown' })
         .then(() => {
-            console.log('Уведомление отправлено админу');
+            console.log('Сообщение успешно отправлено в Telegram');
             res.json({ success: true });
         })
         .catch((err) => {
-            console.error('Ошибка бота при отправке:', err);
+            console.error('Ошибка отправки в Telegram:', err);
             res.status(500).json({ success: false, error: "Бот не смог отправить сообщение" });
         });
 });
 
 app.listen(PORT, () => {
-    console.log(`Сервер и Бот запущены на порту ${PORT}`);
+    console.log(`Сервер запущен на порту ${PORT}`);
 });
