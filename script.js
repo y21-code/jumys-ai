@@ -1,10 +1,12 @@
 document.addEventListener('DOMContentLoaded', () => {
-    // Проверка, заполнен ли профиль
+    const modal = document.getElementById('auth-modal');
     if (!localStorage.getItem('userName')) {
-        document.getElementById('auth-modal').style.display = 'flex';
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+    } else {
+        modal.classList.add('hidden');
+        renderJobs();
     }
-
-    renderJobs();
 });
 
 function saveProfile() {
@@ -13,50 +15,39 @@ function saveProfile() {
 
     if (name.trim() && skills.trim()) {
         localStorage.setItem('userName', name);
-        localStorage.setItem('userSkills', skills);
-        
-        // Полностью скрываем модалку
+        localStorage.setItem('userSkills', skills.toLowerCase()); // Сохраняем в маленьком регистре для поиска
+
         const modal = document.getElementById('auth-modal');
-        modal.style.display = 'none';
+        modal.classList.add('hidden'); // Полностью прячем
         
-        alert(`Привет, ${name}! Теперь ты можешь откликаться на вакансии.`);
-        renderJobs(); // Перерисовываем, чтобы данные обновились
+        renderJobs();
     } else {
-        alert("Пожалуйста, введи имя и свои навыки!");
+        alert("Заполни имя и навыки!");
     }
 }
 
-// Измени начальную проверку в DOMContentLoaded:
-document.addEventListener('DOMContentLoaded', () => {
-    const modal = document.getElementById('auth-modal');
-    if (!localStorage.getItem('userName')) {
-        modal.style.display = 'flex';
-    } else {
-        modal.style.display = 'none';
-    }
-    renderJobs();
-});
-
-
 function renderJobs() {
     const jobsContainer = document.querySelector('.jobs-container');
-    const userSkills = localStorage.getItem('userSkills') || "не указаны";
+    const userSkills = localStorage.getItem('userSkills') || "";
 
-    const jobs = [
-        { title: "Бариста", loc: "14 мкр, Coffee Day", chance: "92%", why: "Ты общительный, а это главное для баристы." },
-        { title: "Промоутер", loc: "ТРК Актау", chance: "95%", why: "Работа рядом с тобой, опыт не нужен." },
-        { title: "Помощник админа", loc: "27 мкр, БЦ Каспий", chance: "65%", why: "Нужно подтянуть Excel, как ты и писал." },
-        { title: "Официант", loc: "Набережная, 7 мкр", chance: "80%", why: "В летний сезон тут отличные чаевые." },
-        { title: "Курьер", loc: "Весь город", chance: "85%", why: "У тебя есть самокат, это твое преимущество." },
-        { title: "Оператор Call-центра", loc: "Удаленно", chance: "70%", why: "Твой голос и грамотность — это ключ." },
-        { title: "Кассир", loc: "Супермаркет 'Дана'", chance: "75%", why: "Внимательность, которую ты указал, поможет." },
-        { title: "SMM-помощник", loc: "Креативное агентство", chance: "60%", why: "Ты любишь соцсети, это хороший старт." },
-        { title: "Волонтер на выставку", loc: "Дом Дружбы", chance: "100%", why: "Идеально для твоего резюме и связей." },
-        { title: "Менеджер зала", loc: "Магазин одежды", chance: "82%", why: "Ты разбираешься в стиле и моде." }
+    const allJobs = [
+        { title: "Бариста", loc: "14 мкр, Coffee Day", chance: "92%", tags: ["кофе", "общительный", "люди", "кафе"] },
+        { title: "SMM-помощник", loc: "Креативное агентство", chance: "85%", tags: ["инстаграм", "фото", "видео", "соцсети", "дизайн"] },
+        { title: "Помощник админа", loc: "27 мкр, БЦ Каспий", chance: "65%", tags: ["excel", "компьютер", "офис", "таблицы"] },
+        { title: "Курьер", loc: "Весь город", chance: "95%", tags: ["машина", "права", "самокат", "быстрый", "доставка"] },
+        { title: "Официант", loc: "Набережная", chance: "80%", tags: ["ресторан", "сервис", "еда", "люди"] }
     ];
 
+    // МАГИЯ AI: Фильтруем вакансии по ключевым словам из твоих навыков
+    let filteredJobs = allJobs.filter(job => {
+        return job.tags.some(tag => userSkills.includes(tag));
+    });
+
+    // Если ничего не подошло, показываем всё, чтобы сайт не был пустым
+    if (filteredJobs.length === 0) filteredJobs = allJobs;
+
     jobsContainer.innerHTML = '';
-    jobs.forEach(job => {
+    filteredJobs.forEach(job => {
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
@@ -64,7 +55,7 @@ function renderJobs() {
             <h3>${job.title}</h3>
             <p class="location">📍 ${job.loc}</p>
             <div class="ai-explanation">
-                <p>🤖 <strong>AI Анализ:</strong> ${job.why}</p>
+                <p>🤖 <strong>AI Анализ:</strong> Подходит под твои навыки: ${userSkills}</p>
             </div>
             <button class="apply-btn" onclick="applyJob('${job.title}', '${job.loc}')">Откликнуться со Smart Resume</button>
         `;
@@ -88,7 +79,7 @@ function applyJob(title, loc) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.success) alert('Smart Resume отправлено админу! ✅');
+        if (data.success) alert('Smart Resume отправлено! ✅');
     })
-    .catch(() => alert('Ошибка связи'));
+    .catch(() => alert('Ошибка сервера'));
 }
