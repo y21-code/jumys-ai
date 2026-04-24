@@ -21,7 +21,8 @@ h1 {
     background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-size: 3rem;
+    font-size: 2.5rem;
+    text-align: center;
 }
 
 /* МОДАЛЬНОЕ ОКНО */
@@ -43,10 +44,10 @@ h1 {
     border-radius: 24px;
     border: 1px solid var(--accent-color);
     text-align: center;
-    width: 400px;
+    width: 350px;
 }
 
-input, textarea {
+input {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
@@ -62,6 +63,7 @@ input, textarea {
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     gap: 20px;
     width: 90%;
+    max-width: 1200px;
     padding: 40px 0;
 }
 
@@ -69,15 +71,18 @@ input, textarea {
     background: var(--glass);
     border: 1px solid rgba(255,255,255,0.1);
     border-radius: 20px;
-    padding: 20px;
+    padding: 24px;
     position: relative;
+    transition: transform 0.3s ease;
 }
 
-/* ШКАЛА ШАНСА (PROGRESS BAR) */
+.job-card:hover { transform: translateY(-5px); }
+
+/* ШКАЛА ШАНСА */
 .chance-bar-container {
     background: rgba(255, 255, 255, 0.1);
-    height: 8px;
-    border-radius: 4px;
+    height: 10px;
+    border-radius: 5px;
     margin: 15px 0;
     overflow: hidden;
 }
@@ -85,7 +90,8 @@ input, textarea {
 .chance-bar-fill {
     height: 100%;
     background: linear-gradient(to right, var(--secondary-color), var(--accent-color));
-    transition: width 1s ease-in-out;
+    width: 0; /* Будет меняться через JS */
+    transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);
 }
 
 .chance-tag {
@@ -93,26 +99,30 @@ input, textarea {
     color: black;
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 0.8rem;
+    font-size: 0.75rem;
     font-weight: bold;
     float: right;
 }
 
 .ai-explanation {
     background: rgba(99, 102, 241, 0.1);
-    padding: 10px;
-    border-radius: 10px;
-    margin: 15px 0;
-    font-size: 0.9rem;
+    padding: 12px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-size: 0.85rem;
+    line-height: 1.4;
 }
 
 .apply-btn {
     width: 100%;
-    padding: 12px;
+    padding: 14px;
     border: none;
     background: var(--secondary-color);
     color: white;
-    border-radius: 10px;
+    border-radius: 12px;
     cursor: pointer;
     font-weight: bold;
+    transition: filter 0.3s;
 }
+
+.apply-btn:hover { filter: brightness(1.2); }
