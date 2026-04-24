@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const jobsContainer = document.querySelector('.jobs-container');
 
-    // Данные вакансий (твои карточки)
+    // Массив с твоими вакансиями
     const jobs = [
         {
             title: "Бариста в 14 микрорайоне",
@@ -17,27 +17,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    // Очищаем контейнер перед рендером
-    jobsContainer.innerHTML = '';
+    // Рисуем карточки на странице
+    if (jobsContainer) {
+        jobsContainer.innerHTML = '';
+        jobs.forEach(job => {
+            const card = document.createElement('div');
+            card.className = 'job-card';
+            card.innerHTML = `
+                <div class="chance-tag">Твой шанс: ${job.chance}</div>
+                <h3>${job.title}</h3>
+                <p class="location">📍 ${job.location}</p>
+                <div class="ai-explanation">
+                    <p>🤖 <strong>ИИ Объясняет:</strong></p>
+                    <p>${job.reason}</p>
+                </div>
+                <button class="apply-btn">Откликнуться через AI</button>
+            `;
+            jobsContainer.appendChild(card);
+        });
+    }
 
-    // Рисуем карточки на сайте
-    jobs.forEach(job => {
-        const card = document.createElement('div');
-        card.className = 'job-card';
-        card.innerHTML = `
-            <div class="chance-tag">Твой шанс: ${job.chance}</div>
-            <h3>${job.title}</h3>
-            <p class="location">📍 ${job.location}</p>
-            <div class="ai-explanation">
-                <p>🤖 <strong>ИИ Объясняет:</strong></p>
-                <p>${job.reason}</p>
-            </div>
-            <button class="apply-btn">Откликнуться через AI</button>
-        `;
-        jobsContainer.appendChild(card);
-    });
-
-    // Логика нажатия на кнопки
+    // Обработка нажатий на кнопки для всех пользователей
     document.addEventListener('click', (e) => {
         if (e.target && e.target.classList.contains('apply-btn')) {
             const button = e.target;
@@ -55,7 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             })
             .then(res => res.json())
             .then(data => {
-                if (data.success) alert('Отклик отправлен! Проверь Telegram ✅');
+                if (data.success) alert('Отклик отправлен! Администратор свяжется с вами ✅');
                 else alert('Ошибка отправки');
             })
             .catch(() => alert('Ошибка связи с сервером'))
