@@ -105,14 +105,22 @@ button:hover {
 }
 /* Добавь это к предыдущему CSS */
 .modal {
-    display: none;
+    display: none; /* Скрыто по умолчанию */
     position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    z-index: 1000;
+    top: 0; left: 0; 
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.9); /* Сделаем фон чуть темнее для акцента */
+    z-index: 9999; /* Чтобы точно было поверх всего */
     justify-content: center;
     align-items: center;
+    backdrop-filter: blur(10px);
 }
+
+/* Добавь это, чтобы кнопки на сайте были кликабельны, когда модалка закрыта */
+body.modal-open {
+    overflow: hidden;
+}
+
 
 .modal-content {
     padding: 40px;
