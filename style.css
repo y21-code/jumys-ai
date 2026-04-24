@@ -1,105 +1,105 @@
-:root {
-    --bg-color: #050810;
-    --accent-color: #00ff88; /* Неоновый зеленый */
-    --secondary-color: #6366f1; /* Индиго */
-    --text-light: #ffffff;
-    --glass: rgba(255, 255, 255, 0.05);
-}
+/* Современный шрифт для четкости */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 body {
-    background: radial-gradient(circle at top right, #1e293b, #050810);
-    color: var(--text-light);
     font-family: 'Inter', sans-serif;
+    background-color: #f8fafc; /* Светлый приятный фон */
+    color: #334155;
     margin: 0;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+    padding: 20px;
+    line-height: 1.5;
 }
 
-h1 {
-    font-size: 3rem;
-    background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-top: 40px;
-    text-transform: uppercase;
-    letter-spacing: 2px;
+.logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: #4f46e5;
+    margin-bottom: 30px;
+    text-align: center;
 }
 
-.jobs-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-    gap: 25px;
-    padding: 40px;
-    width: 90%;
-    max-width: 1200px;
+.hero {
+    text-align: center;
+    margin-bottom: 40px;
 }
 
-.job-card {
-    background: var(--glass);
-    backdrop-filter: blur(15px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 24px;
-    padding: 25px;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.hero h1 {
+    color: #1e293b;
+    font-size: 2rem;
 }
 
-.job-card:hover {
-    transform: translateY(-10px) scale(1.02);
-    border-color: var(--accent-color);
-    box-shadow: 0 20px 40px rgba(0, 255, 136, 0.15);
+#jobs-list {
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-.chance-tag {
-    position: absolute;
-    top: 20px;
-    right: -30px;
-    background: var(--accent-color);
-    color: #000;
-    font-weight: bold;
-    padding: 5px 40px;
-    transform: rotate(45deg);
-    font-size: 0.8rem;
+/* Карточка вакансии - четкая и аккуратная */
+.card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+    border: 1px solid #e2e8f0;
 }
 
-.job-card h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-    color: var(--accent-color);
+.score {
+    display: inline-block;
+    background: #e0e7ff;
+    color: #4338ca;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
 }
 
-.location {
-    font-size: 0.9rem;
-    color: #94a3b8;
-    margin-bottom: 20px;
+h3 {
+    margin: 0 0 8px 0;
+    font-size: 20px;
+    color: #0f172a;
+}
+
+p {
+    margin: 0 0 16px 0;
+    color: #64748b;
+}
+
+/* Тот самый блок ИИ, который тебе нравился */
+.ai-box {
+    background: #f0fdf4; /* Светло-зеленый */
+    border-radius: 12px;
+    padding: 16px;
+    margin: 16px 0;
+    border: 1px solid #dcfce7;
+}
+
+.ai-box strong {
+    color: #166534;
     display: block;
+    margin-bottom: 4px;
 }
 
-.ai-explanation {
-    background: rgba(99, 102, 241, 0.1);
-    border-left: 4px solid var(--secondary-color);
-    padding: 15px;
-    border-radius: 12px;
-    margin-bottom: 20px;
+.ai-box p {
+    font-size: 14px;
+    color: #15803d;
+    margin: 0;
 }
 
-.apply-btn {
-    width: 100%;
-    padding: 15px;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, var(--secondary-color), #4f46e5);
+/* Кнопка */
+button {
+    background: #4f46e5;
     color: white;
-    font-weight: bold;
+    border: none;
+    padding: 14px;
+    border-radius: 12px;
+    width: 100%;
+    font-weight: 600;
+    font-size: 16px;
     cursor: pointer;
-    transition: 0.3s;
-    text-transform: uppercase;
+    transition: background 0.2s;
 }
 
-.apply-btn:hover {
-    filter: brightness(1.2);
-    box-shadow: 0 0 20px var(--secondary-color);
+button:hover {
+    background: #4338ca;
 }
