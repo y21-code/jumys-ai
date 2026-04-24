@@ -1,159 +1,109 @@
-/* Современный шрифт для четкости */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+:root {
+    --bg-color: #050810;
+    --accent-color: #00ff88;
+    --secondary-color: #6366f1;
+    --glass: rgba(255, 255, 255, 0.05);
+}
 
 body {
-    font-family: 'Inter', sans-serif;
-    background-color: #f8fafc; /* Светлый приятный фон */
-    color: #334155;
-    margin: 0;
-    padding: 20px;
-    line-height: 1.5;
-}
-
-.logo {
-    font-size: 24px;
-    font-weight: 700;
-    color: #4f46e5;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.hero {
-    text-align: center;
-    margin-bottom: 40px;
-}
-
-.hero h1 {
-    color: #1e293b;
-    font-size: 2rem;
-}
-
-#jobs-list {
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-/* Карточка вакансии - четкая и аккуратная */
-.card {
-    background: white;
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
-    border: 1px solid #e2e8f0;
-}
-
-.score {
-    display: inline-block;
-    background: #e0e7ff;
-    color: #4338ca;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 13px;
-    font-weight: 600;
-    margin-bottom: 12px;
-}
-
-h3 {
-    margin: 0 0 8px 0;
-    font-size: 20px;
-    color: #0f172a;
-}
-
-p {
-    margin: 0 0 16px 0;
-    color: #64748b;
-}
-
-/* Тот самый блок ИИ, который тебе нравился */
-.ai-box {
-    background: #f0fdf4; /* Светло-зеленый */
-    border-radius: 12px;
-    padding: 16px;
-    margin: 16px 0;
-    border: 1px solid #dcfce7;
-}
-
-.ai-box strong {
-    color: #166534;
-    display: block;
-    margin-bottom: 4px;
-}
-
-.ai-box p {
-    font-size: 14px;
-    color: #15803d;
-    margin: 0;
-}
-
-/* Кнопка */
-button {
-    background: #4f46e5;
+    background: var(--bg-color);
     color: white;
-    border: none;
-    padding: 14px;
-    border-radius: 12px;
-    width: 100%;
-    font-weight: 600;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background 0.2s;
+    font-family: 'Inter', sans-serif;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
 }
 
-button:hover {
-    background: #4338ca;
+h1 {
+    margin-top: 50px;
+    background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3rem;
 }
-/* Добавь это к предыдущему CSS */
+
+/* МОДАЛЬНОЕ ОКНО */
 .modal {
-    display: flex; /* По умолчанию флекс, чтобы центрировать контент */
     position: fixed;
     top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(5, 8, 16, 0.98);
-    z-index: 9999;
+    display: flex; 
     justify-content: center;
     align-items: center;
-    backdrop-filter: blur(15px);
-    transition: opacity 0.3s ease;
+    z-index: 9999;
+    transition: opacity 0.4s ease;
 }
 
-/* Когда добавляем этот класс, окно полностью исчезает для кликов */
+/* Когда профиль сохранен, мы полностью уничтожаем окно */
 .modal.hidden {
-    opacity: 0;
-    pointer-events: none; 
-    visibility: hidden;
     display: none !important;
+    visibility: hidden;
+    pointer-events: none;
 }
-
-/* Добавь это, чтобы кнопки на сайте были кликабельны, когда модалка закрыта */
-body.modal-open {
-    overflow: hidden;
-}
-
 
 .modal-content {
+    background: var(--glass);
     padding: 40px;
-    width: 90%;
-    max-width: 450px;
-    text-align: center;
+    border-radius: 24px;
     border: 1px solid var(--accent-color);
+    text-align: center;
+    width: 400px;
 }
 
-.modal-content input, .modal-content textarea {
+input, textarea {
     width: 100%;
     padding: 12px;
     margin: 10px 0;
-    background: rgba(255,255,255,0.1);
+    background: rgba(255,255,255,0.05);
     border: 1px solid rgba(255,255,255,0.2);
     color: white;
     border-radius: 8px;
+    box-sizing: border-box;
 }
 
-.subtitle {
-    color: #94a3b8;
-    margin-bottom: 30px;
+.jobs-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 20px;
+    width: 90%;
+    padding: 40px 0;
 }
-/* Этот класс полностью убирает окно, чтобы оно не мешало кликать */
-.modal.hidden {
-    display: none !important;
-    pointer-events: none;
+
+.job-card {
+    background: var(--glass);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 20px;
+    position: relative;
+}
+
+.chance-tag {
+    background: var(--accent-color);
+    color: black;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    float: right;
+}
+
+.ai-explanation {
+    background: rgba(99, 102, 241, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
+
+.apply-btn {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    background: var(--secondary-color);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
 }
