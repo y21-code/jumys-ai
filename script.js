@@ -71,7 +71,13 @@ function renderJobs() {
 }
 
 // ЭТА ФУНКЦИЯ ДОЛЖНА БЫТЬ ЗДЕСЬ И БЫТЬ ГЛОБАЛЬНОЙ
+// ... (начало файла с saveProfile и renderJobs оставь без изменений) ...
+
 window.applyJob = function(jobTitle, chance) {
+    const applyBtn = event.target; // Кнопка, на которую нажали
+    applyBtn.disabled = true;
+    applyBtn.innerText = "Отправка...";
+
     const data = {
         jobTitle,
         chance,
@@ -87,6 +93,19 @@ window.applyJob = function(jobTitle, chance) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     })
-    .then(() => alert(`✅ Успех! Работодатель свяжется с тобой, ${data.name}`))
-    .catch(() => alert("Ошибка сервера, но для демо — всё ушло! 😉"));
+    .then(response => {
+        if (response.ok) {
+            alert(`✅ Успех! Заявка на "${jobTitle" отправлена в Telegram!`);
+            applyBtn.innerText = "Отправлено";
+            applyBtn.style.backgroundColor = "#27ae60";
+        } else {
+            throw new Error('Ошибка сервера');
+        }
+    })
+    .catch((err) => {
+        console.error(err);
+        alert("❌ Ошибка при отправке. Проверь токен бота и интернет.");
+        applyBtn.disabled = false;
+        applyBtn.innerText = "Откликнуться";
+    });
 };
