@@ -125,20 +125,3 @@ function applyJob(title) {
     .then(() => alert("Твой Smart Resume улетел работодателю! Удачной охоты! 🚀"))
     .catch(() => alert("Ошибка! Проверь сервер."));
 }
-
-Ты сам этот добавь вот:
-В script.js добавь функцию:
-function filterJobs() {
-    let input = document.getElementById('jobSearch').value.toLowerCase();
-    let cards = document.getElementsByClassName('job-card');
-    
-    for (let card of cards) {
-        let title = card.querySelector('h3').innerText.toLowerCase();
-        let loc = card.querySelector('p').innerText.toLowerCase();
-        if (title.includes(input) || loc.includes(input)) {
-            card.style.display = "";
-        } else {
-            card.style.display = "none";
-        }
-    }
-}
