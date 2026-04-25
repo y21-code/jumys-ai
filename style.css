@@ -2,22 +2,19 @@
 
 :root {
     /* ЦВЕТОВАЯ ПАЛИТРА КИБЕРПАНК */
-    --bg-dark: #050110;        /* Глубокий фиолетовый фон */
-    --text-white: #FFFFFF;      /* Белый для текста */
-    --text-gray: #A0AEC0;       /* Серый для подзаголовков */
+    --bg-dark: #050110;        
+    --text-white: #FFFFFF;      
+    --text-gray: #A0AEC0;       
     
-    --fuchsia-neon: #FF00FF;   /* Ярко-розовый заголовок */
-    --purple-neon: #8A2BE2;    /* Пурпурный для акцентов */
-    --blue-cyber: #00FFFF;     /* Голубой блик для ИИ */
+    --fuchsia-neon: #FF00FF;   
+    --purple-neon: #8A2BE2;    
+    --blue-cyber: #00FFFF;     
     
-    /* Градиент для кнопок (Пурпур -> Фуксия) */
+    /* Градиенты */
     --btn-gradient: linear-gradient(135deg, #6366f1 0%, #8A2BE2 50%, #FF00FF 100%);
+    --bar-gradient: linear-gradient(90deg, #6366f1, #a855f7);
     
-    /* Градиент для шкалы (Голубой -> Пурпур) */
-    --bar-gradient: linear-gradient(to right, #00FFFF, #8A2BE2);
-    
-    --glass: rgba(255, 255, 255, 0.03); /* Ультра-тонкое стекло */
-    --glass-border: rgba(138, 43, 226, 0.2); /* Граница фиолетовая */
+    --glass: rgba(255, 255, 255, 0.03); 
 }
 
 body {
@@ -29,7 +26,6 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    /* Металлический блик на фоне */
     background-image: radial-gradient(circle at 10% 10%, rgba(138, 43, 226, 0.15) 0%, transparent 40%);
 }
 
@@ -38,14 +34,15 @@ h1 {
     font-size: 3rem;
     font-weight: 700;
     text-align: center;
-    color: var(--fuchsia-neon); /* Фуксия Заголовок */
-    text-shadow: 0 0 15px rgba(255, 0, 255, 0.7); /* Неоновое свечение */
+    color: var(--fuchsia-neon); 
+    text-shadow: 0 0 15px rgba(255, 0, 255, 0.7); 
 }
 
 .subtitle {
     color: var(--text-gray);
     margin-top: -10px;
     margin-bottom: 40px;
+    text-align: center;
 }
 
 /* МОДАЛЬНОЕ ОКНО */
@@ -65,21 +62,17 @@ h1 {
     background: var(--glass);
     padding: 40px;
     border-radius: 24px;
-    border: 1px solid var(--purple-neon); /* Фиолетовая граница */
-    box-shadow: 0 0 30px rgba(138, 43, 226, 0.3); /* Пурпурное свечение */
+    border: 1px solid var(--purple-neon); 
+    box-shadow: 0 0 30px rgba(138, 43, 226, 0.3); 
     text-align: center;
     width: 350px;
-}
-
-.modal-content h2 {
-    color: var(--fuchsia-neon);
 }
 
 input, textarea {
     width: 100%;
     padding: 14px;
     margin: 10px 0;
-    background: rgba(138, 43, 226, 0.05); /* Легкий пурпурный фон */
+    background: rgba(138, 43, 226, 0.05); 
     border: 1px solid rgba(138, 43, 226, 0.3);
     color: var(--text-white);
     border-radius: 10px;
@@ -87,122 +80,135 @@ input, textarea {
     font-size: 1rem;
 }
 
-input:focus, textarea:focus {
-    outline: none;
-    border-color: var(--blue-cyber); /* Голубой блик при фокусе */
-    box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
-}
-
-/* КАРТОЧКИ ВАКАНСИЙ */
+/* КАРТОЧКИ ВАКАНСИЙ (СЕТКА) */
 .jobs-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
     gap: 25px;
     width: 90%;
     max-width: 1200px;
     padding: 40px 0;
 }
 
+/* САМА КАРТОЧКА (ОБНОВЛЕННАЯ) */
 .job-card {
-    background: var(--glass);
-    border: 1px solid var(--glass-border);
-    border-radius: 20px;
-    padding: 24px;
+    background: #1a1c23; /* Темный фон как на фото */
+    border-radius: 24px;
+    padding: 25px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    color: white;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     position: relative;
-    transition: all 0.3s ease;
+    transition: transform 0.3s ease;
 }
 
-.job-card:hover { 
-    transform: translateY(-5px); 
-    border-color: var(--purple-neon);
-    box-shadow: 0 10px 20px rgba(138, 43, 226, 0.2);
-}
-
-/* ШКАЛА ШАНСА */
-.chance-bar-container {
-    background: rgba(255, 255, 255, 0.05);
-    height: 10px;
-    border-radius: 5px;
-    margin: 15px 0;
-    overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.chance-bar-fill {
-    height: 100%;
-    background: var(--bar-gradient); /* Голубой -> Пурпур */
-    width: 0;
-    transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);
-    box-shadow: 0 0 10px var(--blue-cyber); /* Голубое свечение */
+.job-card:hover {
+    transform: translateY(-5px);
 }
 
 .chance-tag {
-    background: var(--btn-gradient); /* Градиент как у кнопок */
+    background: var(--btn-gradient); 
     color: white;
-    padding: 5px 14px;
+    padding: 6px 14px;
     border-radius: 20px;
     font-size: 0.75rem;
     font-weight: bold;
     float: right;
-    box-shadow: 0 0 10px rgba(255, 0, 255, 0.5);
+    box-shadow: 0 0 10px rgba(255, 0, 255, 0.4);
 }
 
-/* AI АНАЛИЗ */
-.ai-explanation {
-    background: rgba(138, 43, 226, 0.1); /* Легкий фиолетовый неон */
-    padding: 15px;
-    border-radius: 12px;
+.job-card h3 {
+    font-size: 1.4rem;
+    margin: 10px 0 5px 0;
+}
+
+.job-location {
+    color: #94a3b8;
+    font-size: 0.95rem;
     margin-bottom: 20px;
-    font-size: 0.85rem;
-    line-height: 1.5;
+}
+
+/* ПРОГРЕСС БАР (ТОНКИЙ) */
+.progress-container {
+    background: rgba(255, 255, 255, 0.1);
+    height: 8px;
+    border-radius: 10px;
+    margin-bottom: 20px;
+    overflow: hidden;
+}
+
+.progress-bar {
+    height: 100%;
+    background: var(--bar-gradient);
+    border-radius: 10px;
+    width: 0;
+    transition: width 1.5s cubic-bezier(0.1, 0.5, 0.1, 1);
+    box-shadow: 0 0 10px rgba(99, 102, 241, 0.5);
+}
+
+/* AI БЛОК (АККУРАТНЫЙ) */
+.ai-box {
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 12px;
     border: 1px solid rgba(138, 43, 226, 0.2);
 }
 
-.ai-explanation strong {
-    color: var(--blue-cyber); /* "🤖 Jumys AI" синим */
+.ai-box p {
+    margin: 0;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
 
-/* ОБУЧАЮЩИЙ БЛОК */
-.skills-gap-analyzer {
-    margin-top: 10px;
-    padding: 10px;
-    border-left: 3px solid var(--fuchsia-neon); /* Фуксия линия */
-    background: rgba(255, 0, 255, 0.03);
-    font-size: 0.8rem;
-    color: var(--text-gray);
-}
-
-.skills-gap-analyzer strong {
-    color: var(--text-white);
-}
-
-.skills-gap-analyzer a {
-    color: var(--fuchsia-neon);
-    text-decoration: none;
-    font-weight: bold;
-}
-
-.skills-gap-analyzer a:hover {
+.ai-box b {
     color: var(--blue-cyber);
 }
 
-/* КНОПКИ */
-.apply-btn {
-    width: 100%;
-    padding: 14px;
-    border: none;
-    background: var(--btn-gradient); /* Пурпур -> Фуксия */
-    color: white;
+/* EDU БЛОК (С ЛИНИЕЙ) */
+.edu-box {
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 12px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 1rem;
-    transition: all 0.3s;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    padding: 16px;
+    margin-bottom: 25px;
 }
 
-.apply-btn:hover { 
-    filter: brightness(1.1);
-    box-shadow: 0 0 15px rgba(255, 0, 255, 0.6);
+.edu-title {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin: 0 0 5px 0;
+}
+
+.edu-link {
+    color: var(--blue-cyber);
+    text-decoration: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.edu-link:hover {
+    text-decoration: underline;
+}
+
+/* КНОПКА (ШИРОКАЯ) */
+.apply-btn {
+    width: 100%;
+    background: #6366f1;
+    color: white;
+    border: none;
+    padding: 16px;
+    border-radius: 14px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+}
+
+.apply-btn:hover {
+    transform: scale(1.02);
+    background: #4f46e5;
+    box-shadow: 0 0 20px rgba(99, 102, 241, 0.4);
 }
