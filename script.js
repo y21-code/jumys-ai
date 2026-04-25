@@ -31,10 +31,38 @@ function renderJobs() {
     const userSkills = localStorage.getItem('userSkills') || "";
     const userDistrict = (localStorage.getItem('userDistrict') || "").toLowerCase();
 
+    // Расширенные данные вакансий для Edu-блока
     const jobs = [
-        { title: "Python-разработчик", loc: "IT Hub (14 мкр)", tags: ["python", "код"], baseChance: 40, road: "14 мкр" },
-        { title: "Бариста", loc: "Coffee Day (14 мкр)", tags: ["кофе", "люди"], baseChance: 60, road: "14 мкр" },
-        { title: "Менеджер", loc: "БЦ Каспий (9 мкр)", tags: ["excel", "звонки"], baseChance: 30, road: "9 мкр" }
+        { 
+            title: "Python-разработчик", 
+            loc: "IT Hub (14 мкр)", 
+            tags: ["python", "код"], 
+            baseChance: 40, 
+            road: "14 мкр",
+            missing: ["код", "логика"],
+            course: "Основы Python на Stepik",
+            courseColor: "#6366f1" // Сиреневый
+        },
+        { 
+            title: "Бариста", 
+            loc: "Coffee Day (14 мкр)", 
+            tags: ["кофе", "люди"], 
+            baseChance: 60, 
+            road: "14 мкр",
+            missing: ["кофе", "сервис"],
+            course: "Мастер-класс по латте-арт",
+            courseColor: "#00ff88" // Бирюзовый
+        },
+        { 
+            title: "Менеджер", 
+            loc: "БЦ Каспий (9 мкр)", 
+            tags: ["excel", "звонки"], 
+            baseChance: 30, 
+            road: "9 мкр",
+            missing: ["excel", "переговоры"],
+            course: "Курс 'Excel для начинающих'",
+            courseColor: "#FFD700" // Золотой
+        }
     ];
 
     container.innerHTML = '';
@@ -46,7 +74,7 @@ function renderJobs() {
         if (userDistrict.includes(job.road.toLowerCase())) chance += 20;
         if (chance > 99) chance = 99;
 
-        // --- ГЕНЕРАЦИЯ УМНОГО AI ТЕКСТА (как на фото №1) ---
+        // --- ГЕНЕРАЦИЯ ПЕРСОНАЛИЗИРОВАННОГО AI ТЕКСТА ---
         let aiText = "";
         if (matches.length > 0) {
             aiText = `Слушай, твои навыки в **${matches[0]}** — это просто пушка для этой вакансии! Работа в твоем районе!`;
@@ -56,7 +84,7 @@ function renderJobs() {
 
         const card = document.createElement('div');
         card.className = 'job-card';
-        // Верстка под фото №2, но текст внутри AI-бокса развернутый
+        // ВЕРСТКА ПОД РЕФЕРЕНС (Фото №1)
         card.innerHTML = `
             <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
@@ -68,6 +96,11 @@ function renderJobs() {
             
             <div class="ai-box">
                 <p>🤖 <b>Jumys AI:</b> ${aiText}</p>
+            </div>
+
+            <div class="edu-box" style="border-left: 3px solid ${job.courseColor};">
+                📚 <b>ИИ советует подтянуть:</b> ${job.missing.join(', ')}.<br>
+                <a href="#">Посмотреть бесплатный курс: ${job.course}</a>
             </div>
 
             <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">ОТКЛИКНУТЬСЯ CO SMART RESUME</button>
