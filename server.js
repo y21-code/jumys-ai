@@ -26,12 +26,12 @@ bot.launch().then(() => console.log("Бот запущен"));
 app.post('/api/apply', (req, res) => {
     const { jobTitle, studentName, studentSkills } = req.body;
 
-    const message = 🚀 **НОВОЕ SMART RESUME!**\n\n +
-                    👤 **Кандидат:** ${studentName}\n +
-                    💪 **Навыки:** ${studentSkills}\n +
-                    💼 **Вакансия:** ${jobTitle}\n\n +
-                    --- \n +
-                    🤖 *AI Анализ: Подходит на 85%.*;
+    const message = `🚀 **НОВОЕ SMART RESUME!**\n\n` +
+                    `👤 **Кандидат:** ${studentName}\n` +
+                    `💪 **Навыки:** ${studentSkills}\n` +
+                    `💼 **Вакансия:** ${jobTitle}\n\n` +
+                    `--- \n` +
+                    `🤖 *AI Анализ: Подходит на 85%.*`;
 
     bot.telegram.sendMessage(ADMIN_ID, message, { parse_mode: 'Markdown' })
         .then(() => {
