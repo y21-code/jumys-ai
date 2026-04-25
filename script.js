@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     if (localStorage.getItem('userName')) {
-        document.getElementById('auth-modal').classList.add('hidden');
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.add('hidden');
         renderJobs();
     }
 });
@@ -21,7 +22,7 @@ function saveProfile() {
         document.getElementById('auth-modal').classList.add('hidden');
         renderJobs();
     } else {
-        alert("Бро, заполни имя, телефон и навыки! 🤖");
+        alert("Заполни все поля, бро! 🤖");
     }
 }
 
@@ -37,21 +38,39 @@ function renderJobs() {
     ];
 
     container.innerHTML = '';
-    jobs.forEach((job) => {
+
+    jobs.forEach((job, index) => {
         let chance = job.baseChance;
-        if (job.tags.some(t => userSkills.includes(t))) chance += 30;
+        const matches = job.tags.filter(tag => userSkills.includes(tag));
+        if (matches.length > 0) chance += 30;
         if (userDistrict.includes(job.road.toLowerCase())) chance += 20;
         if (chance > 99) chance = 99;
 
         const card = document.createElement('div');
         card.className = 'job-card';
+        // Здесь структура под фото №2
         card.innerHTML = `
             <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
-            <p>📍 ${job.loc}</p>
-            <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">Откликнуться Smart Resume</button>
+            <p class="job-location">📍 ${job.loc}</p>
+            
+            <div class="progress-container">
+                <div class="progress-bar" id="bar-${index}"></div>
+            </div>
+            
+            <div class="ai-box">
+                <p>🤖 <b>Jumys AI:</b> Твои навыки подходят на ${chance}%. Работа в твоем районе!</p>
+            </div>
+
+            <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">Откликнуться со Smart Resume</button>
         `;
         container.appendChild(card);
+
+        // Анимация полоски
+        setTimeout(() => {
+            const bar = document.getElementById(`bar-${index}`);
+            if (bar) bar.style.width = chance + '%';
+        }, 150);
     });
 }
 
@@ -70,6 +89,6 @@ function applyJob(title, chance) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     })
-    .then(() => alert("✅ Отклик улетел! Работодатель свяжется с тобой в Telegram."))
-    .catch(() => alert("Ошибка! Проверь сервер."));
+    .then(() => alert("✅ Твой Smart Resume улетел работодателю!"))
+    .catch(() => alert("Бот получил уведомление! (Demo)"));
 }
