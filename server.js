@@ -11,9 +11,13 @@ const token = 'ТВОЙ_ТОКЕН';
 const chatId = 'ТВОЙ_ID'; 
 const bot = new TelegramBot(token, { polling: true });
 
-// ГЛАВНЫЙ МАРШРУТ ДЛЯ ОТКЛИКОВ
 app.post('/api/apply', (req, res) => {
     const { jobTitle, chance, name, phone, tg, skills, district } = req.body;
+
+    // Простая проверка, чтобы бот не отправлял пустые сообщения
+    if (!name || !phone) {
+        return res.status(400).json({ error: "Missing data" });
+    }
 
     const message = `
 🚀 **НОВЫЙ ОТКЛИК НА JUMYS AI!**
@@ -25,7 +29,7 @@ app.post('/api/apply', (req, res) => {
 👤 **Кандидат:** ${name}
 💪 **Навыки:** ${skills}
 📞 **Тел:** ${phone}
-✈️ **TG:** ${tg || 'не указан'}
+✈️ **TG:** ${tg ? tg : 'не указан'}
     `;
 
     const options = {
@@ -39,15 +43,12 @@ app.post('/api/apply', (req, res) => {
     };
 
     bot.sendMessage(chatId, message, options)
-        .then(() => {
-            res.status(200).json({ success: true });
-        })
+        .then(() => res.status(200).json({ success: true }))
         .catch((err) => {
-            console.error(err);
+            console.error("Bot Error:", err);
             res.status(500).json({ error: 'Bot error' });
         });
 });
 
-// Запуск сервера
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
