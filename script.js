@@ -8,22 +8,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveProfile() {
     const name = document.getElementById('user-name').value;
-    const phone = document.getElementById('user-phone').value; // Новое
-    const tg = document.getElementById('user-tg').value; // Новое
     const skills = document.getElementById('user-skills').value;
-    const district = document.getElementById('user-district').value;
+    const district = document.getElementById('user-district') ? document.getElementById('user-district').value : "Актау";
 
-    if (name && phone && skills) {
+    if (name.trim() && skills.trim()) {
         localStorage.setItem('userName', name);
-        localStorage.setItem('userPhone', phone);
-        localStorage.setItem('userTG', tg);
         localStorage.setItem('userSkills', skills.toLowerCase());
-        localStorage.setItem('userDistrict', district);
+        localStorage.setItem('userDistrict', district); // Сохраняем район
         document.getElementById('auth-modal').classList.add('hidden');
         renderJobs();
+    } else {
+        alert("Заполни поля, бро!");
     }
 }
-
 
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
@@ -127,4 +124,21 @@ function applyJob(title) {
     .then(res => res.json())
     .then(() => alert("Твой Smart Resume улетел работодателю! Удачной охоты! 🚀"))
     .catch(() => alert("Ошибка! Проверь сервер."));
+}
+
+Ты сам этот добавь вот:
+В script.js добавь функцию:
+function filterJobs() {
+    let input = document.getElementById('jobSearch').value.toLowerCase();
+    let cards = document.getElementsByClassName('job-card');
+    
+    for (let card of cards) {
+        let title = card.querySelector('h3').innerText.toLowerCase();
+        let loc = card.querySelector('p').innerText.toLowerCase();
+        if (title.includes(input) || loc.includes(input)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    }
 }
