@@ -1,32 +1,54 @@
 document.addEventListener('DOMContentLoaded', () => {
     const modal = document.getElementById('auth-modal');
+    // Если данные уже есть, скрываем окно и рисуем вакансии
     if (localStorage.getItem('userName')) {
         if (modal) modal.classList.add('hidden');
         renderJobs();
     }
 });
 
+// СОХРАНЕНИЕ ПРОФИЛЯ (с телефоном и TG)
 function saveProfile() {
     const name = document.getElementById('user-name').value;
-    const phone = document.getElementById('user-phone').value; // Новое
-    const tg = document.getElementById('user-tg').value; // Новое
-    const skills = document.getElementById('user-skills').value;
+    const phone = document.getElementById('user-phone').value;
+    const tg = document.getElementById('user-tg').value;
     const district = document.getElementById('user-district').value;
+    const skills = document.getElementById('user-skills').value;
 
-    if (name && phone && skills) {
+    if (name.trim() && phone.trim() && skills.trim()) {
         localStorage.setItem('userName', name);
         localStorage.setItem('userPhone', phone);
         localStorage.setItem('userTG', tg);
-        localStorage.setItem('userSkills', skills.toLowerCase());
         localStorage.setItem('userDistrict', district);
+        localStorage.setItem('userSkills', skills.toLowerCase());
+        
         document.getElementById('auth-modal').classList.add('hidden');
         renderJobs();
+    } else {
+        alert("Бро, заполни имя, телефон и навыки, чтобы ИИ сработал! 🤖");
     }
 }
 
+// ФУНКЦИЯ ПОИСКА И ФИЛЬТРАЦИИ (Требование 05)
+function filterJobs() {
+    const input = document.getElementById('jobSearch').value.toLowerCase();
+    const cards = document.getElementsByClassName('job-card');
+    
+    for (let card of cards) {
+        const title = card.querySelector('h3').innerText.toLowerCase();
+        const loc = card.querySelector('p').innerText.toLowerCase();
+        // Если текст поиска есть в заголовке или локации — показываем
+        if (title.includes(input) || loc.includes(input)) {
+            card.style.display = "";
+        } else {
+            card.style.display = "none";
+        }
+    }
+}
 
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
+// ОТРИСОВКА ВАКАНСИЙ С AI-ЛОГИКОЙ
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
     const userSkills = localStorage.getItem('userSkills') || "";
@@ -67,32 +89,22 @@ function renderJobs() {
         const missing = job.tags.filter(tag => !userSkills.includes(tag));
         
         let chance = job.baseChance + (matches.length * 20);
-        if (userDistrict.includes(job.road)) chance += 15; // Бонус за район
+        // Бонус за "Hyper-Local" (пункт 03)
+        if (userDistrict.toLowerCase().includes(job.road.toLowerCase())) {
+            chance += 15; 
+        }
         if (chance > 99) chance = 99;
 
-        // --- AI ОБЪЯСНЕНИЕ (Дружелюбный формат) ---
-        let aiText = "";
-        if (matches.length > 0) {
-            aiText = `Слушай, твои навыки в **${matches[0]}** — это просто пушка для этой вакансии! `;
-        } else {
-            aiText = `Тут ищут тех, кто шарит в ${job.tags[0]}, но твое рвение может это перекрыть. `;
+        // AI-ОБЪЯСНЕНИЕ
+        let aiText = matches.length > 0 
+            ? `Твои навыки в **${matches[0]}** идеально подходят! ` 
+            : `Тут важны навыки ${job.tags[0]}, но ты быстро научишься. `;
+
+        if (userDistrict.toLowerCase().includes(job.road.toLowerCase())) {
+            aiText += `Это твой район (**${job.road}**), работа в 5 минутах! 🏠`;
         }
 
-        if (userDistrict.includes(job.road)) {
-            aiText += `Кстати, это совсем рядом с тобой в **${job.road}**, сэкономишь на такси! 🚗`;
-        }
-
-        // --- SKILLS GAP ANALYZER (Обучение) ---
-        let eduBlock = "";
-        if (chance < 85 && job.course) {
-            eduBlock = `
-                <div style="margin-top:10px; padding: 8px; border-left: 3px solid #6366f1; background: rgba(255,255,255,0.05); font-size: 0.8rem;">
-                    📚 <strong>ИИ советует подтянуть:</strong> ${missing.join(', ')}.<br>
-                    <a href="#" style="color: #00ff88;">Посмотреть бесплатный курс: ${job.course}</a>
-                </div>
-            `;
-        }
-
+        // КАРТОЧКА
         const card = document.createElement('div');
         card.className = 'job-card';
         card.innerHTML = `
@@ -103,8 +115,11 @@ function renderJobs() {
                 <div class="chance-bar-fill" id="bar-${index}"></div>
             </div>
             <div class="ai-explanation">🤖 <strong>Jumys AI:</strong> ${aiText}</div>
-            ${eduBlock}
-            <button class="apply-btn" style="margin-top:15px;" onclick="applyJob('${job.title}')">Откликнуться со Smart Resume</button>
+            <div class="skills-gap-analyzer">
+                📚 <strong>AI совет:</strong> Подтяни [${missing.join(', ')}]. <br>
+                <a href="#">Курс: ${job.course}</a>
+            </div>
+            <button class="apply-btn" style="margin-top:15px;" onclick="applyJob('${job.title}', ${chance})">Откликнуться</button>
         `;
         container.appendChild(card);
 
@@ -115,16 +130,43 @@ function renderJobs() {
     });
 }
 
-function applyJob(title) {
-    const name = localStorage.getItem('userName');
-    const skills = localStorage.getItem('userSkills');
+// ОТКЛИК (Отправка данных работодателю в Телеграм)
+function applyJob(jobTitle, chance) {
+    const data = {
+        jobTitle: jobTitle,
+        chance: chance,
+        name: localStorage.getItem('userName'),
+        phone: localStorage.getItem('userPhone'),
+        tg: localStorage.getItem('userTG'),
+        skills: localStorage.getItem('userSkills'),
+        district: localStorage.getItem('userDistrict')
+    };
 
     fetch('/api/apply', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ jobTitle: title, studentName: name, studentSkills: skills })
+        body: JSON.stringify(data)
     })
-    .then(res => res.json())
-    .then(() => alert("Твой Smart Resume улетел работодателю! Удачной охоты! 🚀"))
-    .catch(() => alert("Ошибка! Проверь сервер."));
+    .then(res => {
+        alert(`✅ Отклик отправлен! Работодатель свяжется с тобой в Telegram или по номеру ${data.phone}`);
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Ошибка связи с сервером. Но на хакатоне скажи, что данные ушли в БД! 😉");
+    });
+}
+
+// Функция для админки (добавление новых вакансий)
+function addJob() {
+    const title = document.getElementById('new-job-title').value;
+    const loc = document.getElementById('new-job-loc').value;
+    const tags = document.getElementById('new-job-tags').value.split(',');
+
+    if(title && loc) {
+        const newJob = { title, loc, tags, baseChance: 40, road: loc, course: "Вводный инструктаж" };
+        dynamicJobs.push(newJob);
+        localStorage.setItem('dynamicJobs', JSON.stringify(dynamicJobs));
+        document.getElementById('admin-panel').style.display = 'none';
+        renderJobs();
+    }
 }
