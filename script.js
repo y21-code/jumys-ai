@@ -8,19 +8,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function saveProfile() {
     const name = document.getElementById('user-name').value;
+    const phone = document.getElementById('user-phone').value; // Новое
+    const tg = document.getElementById('user-tg').value; // Новое
     const skills = document.getElementById('user-skills').value;
-    const district = document.getElementById('user-district') ? document.getElementById('user-district').value : "Актау";
+    const district = document.getElementById('user-district').value;
 
-    if (name.trim() && skills.trim()) {
+    if (name && phone && skills) {
         localStorage.setItem('userName', name);
+        localStorage.setItem('userPhone', phone);
+        localStorage.setItem('userTG', tg);
         localStorage.setItem('userSkills', skills.toLowerCase());
-        localStorage.setItem('userDistrict', district); // Сохраняем район
+        localStorage.setItem('userDistrict', district);
         document.getElementById('auth-modal').classList.add('hidden');
         renderJobs();
-    } else {
-        alert("Заполни поля, бро!");
     }
 }
+
 
 let dynamicJobs = JSON.parse(localStorage.getItem('dynamicJobs')) || [];
 
