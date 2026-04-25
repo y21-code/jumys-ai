@@ -46,9 +46,17 @@ function renderJobs() {
         if (userDistrict.includes(job.road.toLowerCase())) chance += 20;
         if (chance > 99) chance = 99;
 
+        // --- ГЕНЕРАЦИЯ УМНОГО AI ТЕКСТА (как на фото №1) ---
+        let aiText = "";
+        if (matches.length > 0) {
+            aiText = `Слушай, твои навыки в **${matches[0]}** — это просто пушка для этой вакансии! Работа в твоем районе!`;
+        } else {
+            aiText = `Тут ищут тех, кто шарит в ${job.tags[0]}, но твое рвение может это перекрыть. Попробуй!`;
+        }
+
         const card = document.createElement('div');
         card.className = 'job-card';
-        // Здесь структура под фото №2
+        // Верстка под фото №2, но текст внутри AI-бокса развернутый
         card.innerHTML = `
             <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
@@ -59,10 +67,10 @@ function renderJobs() {
             </div>
             
             <div class="ai-box">
-                <p>🤖 <b>Jumys AI:</b> Твои навыки подходят на ${chance}%. Работа в твоем районе!</p>
+                <p>🤖 <b>Jumys AI:</b> ${aiText}</p>
             </div>
 
-            <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">Откликнуться со Smart Resume</button>
+            <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">ОТКЛИКНУТЬСЯ CO SMART RESUME</button>
         `;
         container.appendChild(card);
 
