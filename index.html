@@ -5,45 +5,22 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jumys AI — Твой путь к работе</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-
     <div id="auth-modal" class="modal">
         <div class="modal-content glass">
             <h2>Расскажи о себе 🤖</h2>
-            <p>ИИ проанализирует твои навыки и подберет идеальную вакансию в Актау.</p>
-            
             <input type="text" id="user-name" placeholder="Твое имя">
-            
-            <input type="text" id="user-district" placeholder="Твой микрорайон (например: 14 мкр)">
-            
-            <textarea id="user-skills" placeholder="Что ты умеешь? (например: Excel, пунктуальность, вождение, общение с людьми)"></textarea>
-            
+            <input type="text" id="user-phone" placeholder="Твой телефон">
+            <input type="text" id="user-tg" placeholder="Твой Telegram (@username)">
+            <input type="text" id="user-district" placeholder="Твой район (например: 14 мкр)">
+            <textarea id="user-skills" placeholder="Что ты умеешь?"></textarea>
             <button onclick="saveProfile()" class="apply-btn">Найти работу</button>
         </div>
     </div>
 
     <h1>Jumys AI</h1>
-    <p class="subtitle" style="text-align: center; opacity: 0.8;">Интеллектуальный мост к работе в Актау</p>
-    
-    <div class="jobs-container">
-        </div>
-
-    <button onclick="document.getElementById('admin-panel').style.display='flex'" style="position:fixed; bottom:10px; right:10px; opacity:0.3; background:none; border:none; color:white; font-size:10px; cursor: pointer;">Admin</button>
-
-    <div id="admin-panel" class="modal" style="display:none;">
-        <div class="modal-content glass">
-            <h2>Имитация Парсинга 📡</h2>
-            <p>Вставь сюда текст вакансии из WhatsApp</p>
-            <input type="text" id="new-job-title" placeholder="Название (например: Повар)">
-            <input type="text" id="new-job-loc" placeholder="Мкр (например: 4 мкр)">
-            <input type="text" id="new-job-tags" placeholder="Теги через запятую (кофе, еда)">
-            <button onclick="addJob()" class="apply-btn">Опубликовать на сайт</button>
-            <button onclick="document.getElementById('admin-panel').style.display='none'" style="background:none; color:gray; border:none; margin-top:10px; cursor: pointer;">Закрыть</button>
-        </div>
-    </div>
-
+    <div class="jobs-container"></div>
     <script src="script.js"></script>
 </body>
 </html>
