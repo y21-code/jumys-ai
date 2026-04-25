@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Если данные пользователя уже есть, сразу показываем вакансии
     if (localStorage.getItem('userName')) {
         const modal = document.getElementById('auth-modal');
         if (modal) modal.classList.add('hidden');
@@ -6,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Сохранение профиля
 function saveProfile() {
     const name = document.getElementById('user-name').value;
     const phone = document.getElementById('user-phone').value;
@@ -19,19 +21,22 @@ function saveProfile() {
         localStorage.setItem('userTG', tg);
         localStorage.setItem('userSkills', skills.toLowerCase());
         localStorage.setItem('userDistrict', district);
-        document.getElementById('auth-modal').classList.add('hidden');
+        
+        const modal = document.getElementById('auth-modal');
+        if (modal) modal.classList.add('hidden');
         renderJobs();
     } else {
         alert("Заполни все поля, бро! 🤖");
     }
 }
 
+// Отрисовка вакансий с аккуратной структурой
 function renderJobs() {
     const container = document.querySelector('.jobs-container');
     const userSkills = localStorage.getItem('userSkills') || "";
     const userDistrict = (localStorage.getItem('userDistrict') || "").toLowerCase();
 
-    // Расширенные данные вакансий для Edu-блока
+    // Список вакансий (БД)
     const jobs = [
         { 
             title: "Python-разработчик", 
@@ -41,7 +46,7 @@ function renderJobs() {
             road: "14 мкр",
             missing: ["код", "логика"],
             course: "Основы Python на Stepik",
-            courseColor: "#6366f1" // Сиреневый
+            courseColor: "#6366f1" 
         },
         { 
             title: "Бариста", 
@@ -51,7 +56,7 @@ function renderJobs() {
             road: "14 мкр",
             missing: ["кофе", "сервис"],
             course: "Мастер-класс по латте-арт",
-            courseColor: "#00ff88" // Бирюзовый
+            courseColor: "#00ff88"
         },
         { 
             title: "Менеджер", 
@@ -61,30 +66,28 @@ function renderJobs() {
             road: "9 мкр",
             missing: ["excel", "переговоры"],
             course: "Курс 'Excel для начинающих'",
-            courseColor: "#FFD700" // Золотой
+            courseColor: "#FFD700" 
         }
     ];
 
     container.innerHTML = '';
 
     jobs.forEach((job, index) => {
+        // Расчет шанса
         let chance = job.baseChance;
         const matches = job.tags.filter(tag => userSkills.includes(tag));
         if (matches.length > 0) chance += 30;
         if (userDistrict.includes(job.road.toLowerCase())) chance += 20;
         if (chance > 99) chance = 99;
 
-        // --- ГЕНЕРАЦИЯ ПЕРСОНАЛИЗИРОВАННОГО AI ТЕКСТА ---
-        let aiText = "";
-        if (matches.length > 0) {
-            aiText = `Слушай, твои навыки в **${matches[0]}** — это просто пушка для этой вакансии! Работа в твоем районе!`;
-        } else {
-            aiText = `Тут ищут тех, кто шарит в ${job.tags[0]}, но твое рвение может это перекрыть. Попробуй!`;
-        }
+        // Живой текст от ИИ
+        let aiText = matches.length > 0 
+            ? `Твои навыки в **${matches[0]}** идеально подходят. Работа совсем рядом!` 
+            : `Тут ищут навыки ${job.tags[0]}, но твой опыт в других сферах поможет быстро обучиться.`;
 
+        // Создание карточки (Аккуратная структура как на фото)
         const card = document.createElement('div');
         card.className = 'job-card';
-        // ВЕРСТКА ПОД РЕФЕРЕНС (Фото №1)
         card.innerHTML = `
             <div class="chance-tag">Шанс: ${chance}%</div>
             <h3>${job.title}</h3>
@@ -98,16 +101,16 @@ function renderJobs() {
                 <p>🤖 <b>Jumys AI:</b> ${aiText}</p>
             </div>
 
-            <div class="edu-box" style="border-left: 3px solid ${job.courseColor};">
-                📚 <b>ИИ советует подтянуть:</b> ${job.missing.join(', ')}.<br>
-                <a href="#">Посмотреть бесплатный курс: ${job.course}</a>
+            <div class="edu-box" style="border-left: 4px solid ${job.courseColor};">
+                <p class="edu-title">📚 ИИ советует подтянуть: ${job.missing.join(', ')}</p>
+                <a href="#" class="edu-link">Курс: ${job.course}</a>
             </div>
 
             <button class="apply-btn" onclick="applyJob('${job.title}', ${chance})">ОТКЛИКНУТЬСЯ CO SMART RESUME</button>
         `;
         container.appendChild(card);
 
-        // Анимация полоски
+        // Анимация полоски шанса
         setTimeout(() => {
             const bar = document.getElementById(`bar-${index}`);
             if (bar) bar.style.width = chance + '%';
@@ -115,6 +118,7 @@ function renderJobs() {
     });
 }
 
+// Отправка данных работодателю
 function applyJob(title, chance) {
     const data = {
         jobTitle: title,
@@ -130,6 +134,16 @@ function applyJob(title, chance) {
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(data)
     })
-    .then(() => alert("✅ Твой Smart Resume улетел работодателю!"))
-    .catch(() => alert("Бот получил уведомление! (Demo)"));
+    .then(res => res.json())
+    .then(result => {
+        if (result.success) {
+            alert("✅ Твой Smart Resume улетел работодателю! Ожидай ответа в Telegram.");
+        } else {
+            alert("Ошибка при отправке. Проверь сервер!");
+        }
+    })
+    .catch(err => {
+        console.error("Ошибка:", err);
+        alert("Бот получил уведомление! (Проверь связь с сервером)");
+    });
 }
