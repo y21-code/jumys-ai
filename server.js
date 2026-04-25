@@ -1,54 +1,61 @@
 const express = require('express');
-const TelegramBot = require('node-telegram-bot-api');
-const path = require('path');
-
 const app = express();
+
+// Middleware для чтения JSON в теле запроса
 app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
 
-// ЗАМЕНИ НА СВОИ ДАННЫЕ
-const token = 'ТВОЙ_ТОКЕН'; 
-const chatId = 'ТВОЙ_ID'; 
-const bot = new TelegramBot(token, { polling: true });
+// Данные бота (лучше хранить в .env файле)
+const TELEGRAM_TOKEN = 'ТВОЙ_ТОКЕН_БОТА';
+const CHAT_ID = 'ТВОЙ_CHAT_ID';
 
-app.post('/api/apply', (req, res) => {
-    const { jobTitle, chance, name, phone, tg, skills, district } = req.body;
+app.post('/send-message', async (req, res) => {
+    try {
+        const { name, phone, message } = req.body;
 
-    // Простая проверка, чтобы бот не отправлял пустые сообщения
-    if (!name || !phone) {
-        return res.status(400).json({ error: "Missing data" });
-    }
-
-    const message = `
-🚀 **НОВЫЙ ОТКЛИК НА JUMYS AI!**
---------------------------------
-💼 **Вакансия:** ${jobTitle}
-📈 **AI Шанс:** ${chance}%
-📍 **Район:** ${district}
-
-👤 **Кандидат:** ${name}
-💪 **Навыки:** ${skills}
-📞 **Тел:** ${phone}
-✈️ **TG:** ${tg ? tg : 'не указан'}
-    `;
-
-    const options = {
-        parse_mode: 'Markdown',
-        reply_markup: {
-            inline_keyboard: [[
-                { text: '📞 Позвонить', url: `tel:${phone}` },
-                { text: '💬 Написать в TG', url: `https://t.me/${tg ? tg.replace('@', '') : 'u19kz'}` }
-            ]]
+        // 1. Валидация: проверяем наличие обязательных полей и их длину
+        if (!name || !phone || name.trim() === '' || phone.trim() === '') {
+            return res.status(400).json({ 
+                error: "Ошибка: Поля 'Имя' и 'Телефон' обязательны для заполнения." 
+            });
         }
-    };
 
-    bot.sendMessage(chatId, message, options)
-        .then(() => res.status(200).json({ success: true }))
-        .catch((err) => {
-            console.error("Bot Error:", err);
-            res.status(500).json({ error: 'Bot error' });
+        // 2. Форматирование сообщения (HTML разметка)
+        const tgMessage = `
+<b>🚀 Новая заявка!</b>
+
+👤 <b>Имя:</b> ${name.trim()}
+📞 <b>Телефон:</b> <code>${phone.trim()}</code>
+💬 <b>Сообщение:</b> ${message ? message.trim() : '<i>(пусто)</i>'}
+        `.trim();
+
+        // 3. Отправка в Telegram через API
+        const url = `https://api.telegram.org/bot${TELEGRAM_TOKEN}/sendMessage`;
+        
+        const response = await fetch(url, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: tgMessage,
+                parse_mode: 'HTML' // Чтобы работали жирный шрифт и теги
+            })
         });
+
+        if (response.ok) {
+            return res.status(200).json({ success: true, message: "Сообщение отправлено!" });
+        } else {
+            const errorData = await response.json();
+            console.error('Telegram API Error:', errorData);
+            return res.status(500).json({ error: "Ошибка при отправке в Telegram." });
+        }
+
+    } catch (error) {
+        console.error('Server Error:', error);
+        res.status(500).json({ error: "Внутренняя ошибка сервера." });
+    }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+const PORT = 3000;
+app.listen(PORT, () => {
+    console.log(`Сервер запущен на порту ${PORT}`);
+});
